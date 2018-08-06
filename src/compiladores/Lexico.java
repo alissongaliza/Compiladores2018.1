@@ -1,17 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package compiladores;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/**
- *
- * @author rhenan
- */
 public class Lexico {
     
     private static String[] palavrasChaves = new String[] {
@@ -30,13 +20,6 @@ public class Lexico {
     "do",
     "not",
     "or"};
-//
-//static String[] relacionais = new String[] {
-//    "=",
-//    ">=",
-//    "<=",
-//    "!=",
-//    "<>"};
     
     private int linha_atual;
     private ArrayList<Token> tokens;
@@ -74,12 +57,14 @@ public class Lexico {
                 identificador();
             else if(Character.toString(charAtual).matches("[0-9]"))
                 numeros();              
-//            else if(Character.toString(charAtual).matches("[\{]"))
-//            
+//          
+            else if(Character.toString(charAtual).matches("[\\/\\+\\-\\*]"))
+                operadores();
+        
             else if(Character.toString(charAtual).matches("[/./;/{/},;:]"))
                 delimitador();                
             else if(Character.toString(charAtual).matches("[=<>]"))
-              relacional();
+                relacional();
 //            else if(Character.toString(charAtual).matches("[+ -/\*]"))
 //            
 //            else
@@ -102,7 +87,7 @@ public class Lexico {
             else 
                 break;
         }
-        //System.out.println(nome_token);
+        System.out.println(nome_token);
         if(nome_token.equals("or"))
             criaToken(nome_token, "Operador Aditivo");
         else if(nome_token.equals("and"))
@@ -139,11 +124,12 @@ public class Lexico {
                break;
                //tratar o erro
             }
-            else if(Character.toString(atual).matches("[-+*/<>=\\n]")){
+            else if(Character.toString(atual).matches("[ \\;\\:\\-\\+\\*\\/<>=\\n]")){
                break;
                //tratar o erro
             }
         }
+        System.out.println(nome_token);
         if (real){
             criaToken(nome_token, "Numero Real");
         }
@@ -181,22 +167,25 @@ public class Lexico {
     public void relacional(){
         String nome_token = "";
         nome_token += stringao.get(0);
-        stringao.remove(0);
+        //stringao.remove(0);
         char atual;
         while(!stringao.isEmpty()){
-            atual = stringao.get(0);
             stringao.remove(0);
-            if((nome_token == ">" && atual == '=') || (nome_token == "<" && atual == '=')){
-              nome_token+=atual;
-              criaToken(nome_token,"Relacional");
-            }
-            else if ((nome_token == ">" && atual == '<')||(nome_token == "<" && atual == '>')){
+            atual = stringao.get(0);
+            if((nome_token == ">" && atual == '=') || (nome_token == "<" && (atual == '='))){
                 nome_token+=atual;
                 criaToken(nome_token,"Relacional");
+                return;
+            }
+            else if ((nome_token == "<" && atual == '>')){
+                nome_token+=atual;
+                criaToken(nome_token,"Relacional");
+                return;
             }
             else
                 break;
         }
+        criaToken(nome_token, "Relacional");
     }
     public void delimitador(){
         String nome_token = "";
@@ -205,15 +194,34 @@ public class Lexico {
         char atual;
         while(!stringao.isEmpty()){
             atual = stringao.get(0);
-            if(nome_token == ":"){
+            //System.out.println("aqui");
+            if(nome_token.equals(":")){
                 if(atual == '='){
                     nome_token+=atual;
+                    System.out.println(nome_token);
                     criaToken(nome_token,"Atribuição");
+                    return;
                 }
+                break;
             }
             else
                 break;
         }
+        System.out.println(nome_token);
         criaToken(nome_token,"Delimitador");
+    }
+    public void operadores(){
+        String nome_token = "";
+        nome_token += stringao.get(0);
+        stringao.remove(0);
+        if(nome_token.equals("+")||nome_token.equals("-")){
+            System.out.println(nome_token);
+            criaToken(nome_token,"Operador aditivo");
+        }    
+        else if (nome_token.equals("/")||nome_token.equals("*")){
+            System.out.println(nome_token);
+            criaToken(nome_token,"Operador Multiplicativo");
+            System.out.println("succ");
+        }    
     }
 }

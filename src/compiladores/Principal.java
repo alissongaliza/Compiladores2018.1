@@ -2,8 +2,6 @@ package compiladores;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -16,7 +14,8 @@ public class Principal {
         try {
             
             // Criando um objeto da classe Scanner, ao qual vai ler o arquivo.
-            Scanner s = new Scanner(new File("/home/rhenan/programa.txt")); 
+            Scanner s = new Scanner(new File("/home/gabriel/Desktop/Universidade/2018.1/Compiladores/Analisador Léxico/"
+                    + "Compiladores2018.1/src/compiladores/program.txt")); 
             String linha = "";
             String linha2 = ""; 
             int nlinha = 0;
@@ -26,7 +25,7 @@ public class Principal {
                 
                 linha = s.nextLine();
                 if(s.hasNextLine())
-                    linha += "\n";
+                    linha += '\n';
                 nlinha++;
                 linha2 += linha; 
                 //System.out.println(linha);
@@ -43,9 +42,7 @@ public class Principal {
                 System.out.println(caracteres.get(i));
             
             }
-            
-            //char[] caracteres = linha2.toCharArray();
-            //System.out.println(caracteres.length);
+
 
             Lexico lexico = new Lexico((ArrayList)caracteres.clone()); 
             lexico.inicio();
