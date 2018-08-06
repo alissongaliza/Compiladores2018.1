@@ -73,21 +73,20 @@ public class Lexico {
                 //Chama Identificador
                 identificador();
             else if(Character.toString(charAtual).matches("[0-9]"))
-                numeros();
-//               
+                numeros();              
 //            else if(Character.toString(charAtual).matches("[\{]"))
 //            
-//            else if(Character.toString(charAtual).matches("[\.\;\{\},;]"))
-//                
-//            else if(Character.toString(charAtual).matches("[=<>]"))
-//            
+            else if(Character.toString(charAtual).matches("[/./;/{/},;:]"))
+                delimitador();                
+            else if(Character.toString(charAtual).matches("[=<>]"))
+              relacional();
 //            else if(Character.toString(charAtual).matches("[+ -/\*]"))
 //            
 //            else
                 //error
         }
         System.out.println(tokens);
-    }    
+    }
     public void identificador(){
         String nome_token = "";
         nome_token += stringao.get(0);
@@ -178,5 +177,43 @@ public class Lexico {
         }
         System.err.println("Erro de Sintaxe na Linha: "+linha_atual);
         linha_atual++;
+    }
+    public void relacional(){
+        String nome_token = "";
+        nome_token += stringao.get(0);
+        stringao.remove(0);
+        char atual;
+        while(!stringao.isEmpty()){
+            atual = stringao.get(0);
+            stringao.remove(0);
+            if((nome_token == ">" && atual == '=') || (nome_token == "<" && atual == '=')){
+              nome_token+=atual;
+              criaToken(nome_token,"Relacional");
+            }
+            else if ((nome_token == ">" && atual == '<')||(nome_token == "<" && atual == '>')){
+                nome_token+=atual;
+                criaToken(nome_token,"Relacional");
+            }
+            else
+                break;
+        }
+    }
+    public void delimitador(){
+        String nome_token = "";
+        nome_token += stringao.get(0);
+        stringao.remove(0);
+        char atual;
+        while(!stringao.isEmpty()){
+            atual = stringao.get(0);
+            if(nome_token == ":"){
+                if(atual == '='){
+                    nome_token+=atual;
+                    criaToken(nome_token,"Atribuição");
+                }
+            }
+            else
+                break;
+        }
+        criaToken(nome_token,"Delimitador");
     }
 }
