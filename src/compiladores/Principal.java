@@ -1,4 +1,4 @@
-package compiladores; 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class Principal {
         try {
             
             // Criando um objeto da classe Scanner, ao qual vai ler o arquivo.
-            Scanner s = new Scanner(new File("/home/rhenan/programa.txt")); 
+            Scanner s = new Scanner(new File("/home/jonathan/Documentos/pascal2.txt")); 
             String linha = "";
             String linha2 = ""; 
             int nlinha = 0;
