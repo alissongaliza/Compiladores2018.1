@@ -6,7 +6,6 @@
 package compiladores;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -32,23 +31,18 @@ public class Lexico {
     "[Oo]r",
     "[Tr]rue",
     "[Ff]alse"};
-//
-//static String[] relacionais = new String[] {
-//    "=",
-//    ">=",
-//    "<=",
-//    "!=",
-//    "<>"};
     
-    private int linha_atual;
+    private int linhaAtual;
     private ArrayList<Token> tokens;
     private ArrayList<Character> codigo;
+    private ArrayList<PalavraIgnorada> palavrasIgnoradas;
     
     public Lexico (ArrayList<Character> codigo) {
         
         tokens = new ArrayList();
-        linha_atual = 1;
+        linhaAtual = 1;
         this.codigo = (ArrayList) codigo;
+        palavrasIgnoradas = new ArrayList();
         
     }
     
@@ -58,7 +52,7 @@ public class Lexico {
             if(Character.toString(codigo.get(0)).matches("[\t\r\f\040]"))
                codigo.remove(0);
             else if(Character.toString(codigo.get(0)).matches("[\n]")){
-                linha_atual += 1;
+                linhaAtual += 1;
                 codigo.remove(0);   
             }   
             else
@@ -66,88 +60,90 @@ public class Lexico {
         }    
     }
     
-    public void inicio(){
+    public void percorreCodigo(){
         char charAtual;
         while(!codigo.isEmpty()){
             charAtual = limpaCaracteres();
             
-            
             if(Character.toString(charAtual).matches("[a-zA-Z_]"))
-                //Chama Identificador
-                identificador();
+                variavel();
             
             else if(Character.toString(charAtual).matches("[0-9]"))
-                numeros();              
-//            else if(Character.toString(charAtual).matches("[\{]"))
-//            
-            else if(Character.toString(charAtual).matches("[/./;/{/}/(/),;:]"))
+                operando();              
+            
+            else if(Character.toString(charAtual).matches("[{]"))
+                comentario();
+            
+            else if(Character.toString(charAtual).matches("[.(),;:]"))
                 delimitador();
             
-            else if(Character.toString(charAtual).matches("[=<>]")){
+            else if(Character.toString(charAtual).matches("[=<>]"))
                 relacional();
+            
+            else if(Character.toString(charAtual).matches("[+-/*]"))
+                aritmetico();
+            
+            else{
+                erroNaSintaxe(charAtual);
             }
             
-            else if(Character.toString(charAtual).matches("[+-/*]")){
-                aritmetico();
-            }
-//            
-//            else
-                //error
             proximoCaractere();
         }
+        
         printTokens();
+        //evitar print fora de ordem
+        System.out.flush();
+        
+        printIgnoradas();
     }
     
-    public void identificador(){
-        String nome_token = "";
-        nome_token += codigo.get(0);
+    private void variavel(){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
         codigo.remove(0);
         char atual;
         while(!codigo.isEmpty()){
             
             atual = codigo.get(0);
             if(Character.toString(atual).matches("[a-zA-Z0-9_]")){
-                nome_token += atual;
+                palavraAcumulada += atual;
                 codigo.remove(0);
             }
             else 
                 break;
         }
-        //System.out.println(nome_token);
-        if(nome_token.matches("[Oo]r"))//TODO
-            criaToken(nome_token, "Aritmetico Aditivo");
-        else if(nome_token.matches("[Aa]nd"))
-            criaToken(nome_token, "Aritmetico Multiplicativo");
+        //System.out.println(palavraAcumulada);
+        if(palavraAcumulada.matches("[Oo]r"))//TODO
+            criaToken(palavraAcumulada, "Aritmetico Aditivo");
+        else if(palavraAcumulada.matches("[Aa]nd"))
+            criaToken(palavraAcumulada, "Aritmetico Multiplicativo");
         else
-            verificaPR(nome_token);
+            isPalavraReservada(palavraAcumulada);
     }
     
-    private void numeros(){
-        String nome_token = "";
-        nome_token += codigo.get(0);
+    private void operando(){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
         codigo.remove(0);
         char atual;
         boolean real = false;
-        boolean invalido=false;
         while(!codigo.isEmpty()){
             
             atual = codigo.get(0);
             if(Character.toString(atual).matches("[0-9]")){
-                nome_token += atual;
+                palavraAcumulada += atual;
                 codigo.remove(0);
             }
             else if(Character.toString(atual).matches("[.]") && !real){
-                nome_token += atual;
+                palavraAcumulada += atual;
                 real = true;
                 codigo.remove(0);
             }
             else if(Character.toString(atual).matches("[.]") && real){
-               invalido = true;
                break;
                //tratar o erro
             }
             else if(Character.toString(atual).matches("[a-zA-Z_]") && real){
-               invalido = true; 
                break;
                //tratar o erro
             }
@@ -157,14 +153,14 @@ public class Lexico {
             }
         }
         if (real){
-            criaToken(nome_token, "Numero Real");
+            criaToken(palavraAcumulada, "Numero Real");
         }
         else {
-            criaToken(nome_token, "Numero Inteiro");
+            criaToken(palavraAcumulada, "Numero Inteiro");
         }
     }
     
-    private void verificaPR(String token){
+    private void isPalavraReservada(String token){
         boolean isPR = false;
         for (String i : palavrasChaves){
             if(token.matches(i)){
@@ -178,13 +174,9 @@ public class Lexico {
             criaToken(token, "Identificador");
     }
     
-    private void criaToken(String nome, String tipo){
-        tokens.add(new Token(nome,tipo,linha_atual));
-    }
-    
-    public void relacional(){
-        String nome_token = "";
-        nome_token += codigo.get(0);
+    private void relacional(){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
         codigo.remove(0);
         char atual;
         while(!codigo.isEmpty()){
@@ -192,42 +184,42 @@ public class Lexico {
             codigo.remove(0);
             //redundancia proposital
             
-            if((nome_token.equals(">") && atual == '=') || (nome_token.equals("<") && atual == '=')){   //maior/menor igual que
-              nome_token+=atual;
-              criaToken(nome_token,"Relacional");
+            if((palavraAcumulada.equals(">") && atual == '=') || (palavraAcumulada.equals("<") && atual == '=')){   //maior/menor igual que
+              palavraAcumulada+=atual;
+              criaToken(palavraAcumulada,"Relacional");
               break;
             }
-            else if (nome_token.equals("<") && atual == '>'){   //diferente
-                nome_token+=atual;
-                criaToken(nome_token,"Relacional");
+            else if (palavraAcumulada.equals("<") && atual == '>'){   //diferente
+                palavraAcumulada+=atual;
+                criaToken(palavraAcumulada,"Relacional");
               break;
             }
-            else if(nome_token.equals("=") && (atual == '>' || atual == '<')){  //nao deve acontecer
+            else if(palavraAcumulada.equals("=") && (atual == '>' || atual == '<')){  //nao deve acontecer
                 //erro
                 break;
             }
             else{           //apenas maior/menor
-                criaToken(nome_token,"Relacional");
+                criaToken(palavraAcumulada,"Relacional");
                 break;
             }
         }
     }
     
     private void aritmetico(){
-        String nome_token = "";
-        nome_token += codigo.get(0);
-        switch(nome_token){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
+        switch(palavraAcumulada){
             case "+":
-            criaToken(nome_token,"Aritmetico Aditivo");
+            criaToken(palavraAcumulada,"Operador Aditivo");
                 break;
             case "-":
-            criaToken(nome_token,"Aritmetico Subtrativo");
+            criaToken(palavraAcumulada,"Operador Aditivo");
                 break;
             case "*":
-            criaToken(nome_token,"Aritmetico Multiplicativo");
+            criaToken(palavraAcumulada,"Operador Multiplicativo");
                 break;
             case "/":
-            criaToken(nome_token,"Aritmetico Divisivo");
+            criaToken(palavraAcumulada,"Operador Multiplicativo");
                 break;
         }
         
@@ -235,18 +227,18 @@ public class Lexico {
         
     }
     
-    public void delimitador(){
-        String nome_token = "";
-        nome_token += codigo.get(0);
+    private void delimitador(){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
         codigo.remove(0);
         char atual;
         
         while(!codigo.isEmpty()){
             atual = codigo.get(0);
-            if(nome_token.equals(":")){
+            if(palavraAcumulada.equals(":")){
                 if(atual == '='){
-                    nome_token+=atual;
-                    criaToken(nome_token,"Atribuição");
+                    palavraAcumulada+=atual;
+                    criaToken(palavraAcumulada, "Atribuição");
                     codigo.remove(0);
                     return;
                 }
@@ -257,7 +249,41 @@ public class Lexico {
             else
                 break;
         }
-        criaToken(nome_token,"Delimitador");
+        criaToken(palavraAcumulada, "Delimitador");
+    }
+    
+    private void comentario(){
+        String palavraAcumulada = "";
+        palavraAcumulada += codigo.get(0);
+        codigo.remove(0);
+        char atual;
+        int linhaFechamento = linhaAtual;
+        
+        while(!codigo.isEmpty()){
+            
+            atual = codigo.get(0);
+            palavraAcumulada += atual;
+            switch (atual) {
+                case '}':
+                    criaPalavrasIgnoradas(palavraAcumulada, "Comentário da linha " + linhaAtual + " ate linha " + linhaFechamento);
+                    codigo.remove(0);
+                    return;
+                case '\n':
+                    linhaAtual++;
+                    codigo.remove(0);
+                    break;
+                default:
+                    codigo.remove(0);
+                    break;
+            }
+            
+        }
+        
+        //se chegar aqui significa que nao encontrou um fechar comentario "}"
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("\n\nComentário da linha " + linhaFechamento + " nao fechado ate linha atual(" + linhaAtual + ")\n");
+        System.exit(0);
+        
     }
     
     private void proximoCaractere(){
@@ -267,21 +293,23 @@ public class Lexico {
             codigo.remove(0);
     }
     
-    private void erroSintax(){
-        char chr;
-        chr = codigo.get(0);
-        
-        while(chr != '\n'){
-            codigo.remove(0); 
-            chr = codigo.get(0);
-        }
-        System.err.println("Erro de Sintaxe na Linha: "+linha_atual);
-        linha_atual++;
+    private void erroNaSintaxe(char charAtual){
+        criaPalavrasIgnoradas(String.valueOf(charAtual), "Caractere fora da gramatica na linha " + linhaAtual + ". Ignorando e continuando o codigo...");
+        codigo.remove(0);
+    }
     
+    private void criaPalavrasIgnoradas(String palavraAcumulada, String mensagem){
+        palavrasIgnoradas.add(new PalavraIgnorada(palavraAcumulada, mensagem));
+    }
+    
+    private void criaToken(String nome, String tipo){
+        tokens.add(new Token(nome,tipo,linhaAtual));
     }
     
     private void printTokens(){
         
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("\n\n\nTabela de Tokens:");
         Object[][] table = new String[tokens.size()][];
         
         for(int i = 0; i < tokens.size(); i++){
@@ -289,10 +317,23 @@ public class Lexico {
                                       String.valueOf(tokens.get(i).getNumero())};
         }
 
-        System.out.format("\n\n\n%-15s%-15s%20s\n", "Token", "Tipo", "Linha \n");
+        System.out.format("\n%-15s%-15s%20s\n", "Token", "Tipo", "Linha \n");
         
         for (Object[] row : table) {
             System.out.format("%-15s%-15s%15s\n",row[0], row[1], row[2]);
+        }
+    }
+    
+    private void printIgnoradas(){
+        
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("\n\nPalavras ignoradas: \n");
+        
+        int i = 1;
+        for (PalavraIgnorada palavraIgnorada : palavrasIgnoradas) {
+            
+            System.out.println(i + " - " + palavraIgnorada + "\n");
+            i++;
         }
     }
 }
