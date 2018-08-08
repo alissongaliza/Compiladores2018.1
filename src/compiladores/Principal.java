@@ -12,8 +12,7 @@ public class Principal {
 
         try {
             
-            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF"
-                    + "\\Compiladores\\AnalisadorLexico\\Compiladores2018.1\\programaSlide.txt")); 
+            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt")); 
             String linha;
             String linha2 = ""; 
             
