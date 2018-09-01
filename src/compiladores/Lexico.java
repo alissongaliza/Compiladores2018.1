@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package compiladores;
+// package compiladores;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,8 @@ public class Lexico {
     "[Nn]ot",
     "[Oo]r",
     "[Tr]rue",
-    "[Ff]alse"};
+    "[Ff]alse"
+    };
     
     private int linhaAtual;
     private ArrayList<Token> tokens;

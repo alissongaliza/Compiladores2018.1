@@ -1,4 +1,4 @@
-package compiladores; 
+// package compiladores; 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public class Principal {
     public static void main(String[] args) throws InterruptedException {
 
         try {
-            
-            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt")); 
+            Scanner s = new Scanner(new File ("/Users/lumo/Documents/Compiladores2018.1/programaPdf.txt")); 
+            // Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt")); 
             String linha;
             String linha2 = ""; 
             
