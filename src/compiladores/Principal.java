@@ -1,4 +1,4 @@
-// package compiladores; 
+ package compiladores; 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -11,8 +11,28 @@ public class Principal {
     public static void main(String[] args) throws InterruptedException {
 
         try {
-            Scanner s = new Scanner(new File ("/Users/lumo/Documents/Compiladores2018.1/programaPdf.txt")); 
-            // Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt")); 
+            
+            ArrayList<Character> caracteres = leArquivo();
+            
+            Lexico lexico = new Lexico((ArrayList)caracteres.clone()); 
+            
+            ArrayList<Token> tokens = lexico.percorreCodigo();
+            
+            Sintatico sintatico = new Sintatico ((ArrayList<Token>)tokens.clone());
+            sintatico.program();
+              
+        } catch (FileNotFoundException e) {
+            System.err.println(e);
+        }
+
+        
+    }
+    
+    private static ArrayList<Character> leArquivo() throws FileNotFoundException{
+        
+//            Scanner s = new Scanner(new File ("/Users/lumo/Documents/Compiladores2018.1/programaPdf.txt")); 
+            // Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt"));
+            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
             String linha;
             String linha2 = ""; 
             
@@ -36,14 +56,7 @@ public class Principal {
             
             System.out.flush();
             
-            Lexico lexico = new Lexico((ArrayList)caracteres.clone()); 
-            lexico.percorreCodigo();
-              
-        } catch (FileNotFoundException e) {
-            System.err.println(e);
-        }
-
-        
+            return caracteres;
     }
 
 }

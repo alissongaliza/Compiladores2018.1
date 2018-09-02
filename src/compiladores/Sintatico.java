@@ -1,15 +1,10 @@
+package compiladores; 
 
 import java.util.ArrayList;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
- * @author jonathan
+ * @author Alisson
  */
 public class Sintatico {
 
@@ -22,13 +17,20 @@ public class Sintatico {
         };
 
     public Sintatico(ArrayList<Token> listaLexico) {
-        tokens = new ArrayList();
-        this.tokens = (ArrayList) listaLexico;
+        this.tokens = listaLexico;
     }
 
     private Token getNextToken() {
         tokens.remove(0);
         return tokens.get(0);
+    }
+    
+    private Token getNextTokenWithoutRemoving() {
+        return tokens.get(1);
+    }
+    
+    private void removeCurrentToken(){
+        tokens.remove(0);
     }
 
     private Token getActualToken() {
@@ -38,17 +40,17 @@ public class Sintatico {
     public boolean program() {
 
         String token = "";
-        // token = tokens.get(0).getToken();
+        // token = tokens.get(0).getNome();
 
         boolean validaPrograma = false;
 
-        if (getActualToken().getToken().equals("program")) {
+        if (getActualToken().getNome().matches("[Pp]rogram")) {
             // tokens.remove(0);
-            // token = tokens.get(0).getClassificacao();
-            if (getNextToken().getClassificacao().equals("Identificador")) {
+            // token = tokens.get(0).getTipo();
+            if (getNextToken().getTipo().equals("Identificador")) {
                 // tokens.remove(0);
-                // token += tokens.get(0).getToken();
-                if (getNextToken().getToken().equals(";"))
+                // token += tokens.get(0).getNome();
+                if (getNextToken().getNome().equals(";"))
                     // tokens.remove(0);
                     if (varDeclaration()) {
                         if (subprograma()) {
@@ -63,32 +65,35 @@ public class Sintatico {
     }
 
     private boolean varDeclaration() {
-        // String token = tokens.get(0).getClassificacao();
-        if (getNextToken().getClassificacao().equals("var"))
-            ;
+        // String token = tokens.get(0).getTipo();
+        if (getNextToken().getNome().matches("[Vv]ar")){
         // tokens.remove(0);
-        isVar();
+            isVar();
+        }
         return true;
-
+        
     }
 
     private boolean isVar() {
-        // String token = tokens.get(0).getToken();
+        // String token = tokens.get(0).getNome();
 
         if (isIdentifier()) {
             // tokens.remove(0);
-            // if (getNextToken().getToken().equals(":")) {
-            if (getActualToken().getToken().equals(":")) {
+            if (getNextToken().getNome().equals(":")) {
+//            if (getActualToken().getNome().equals(":")) {
                 // tokens.remove(0);
                 if (isType()) {
                     // tokens.remove(0);
-                    if (getNextToken().getToken().equals(";")) {
+                    if (getNextToken().getNome().equals(";")) {
                         // tokens.remove(0);
-                        if (getNextToken().getClassificacao().equals("Identificador")) {
+                        if (getNextTokenWithoutRemoving().getTipo().equals("Identificador")) {
                             isVar();
                         }
                     }
                 }
+            }
+            else{
+                // sem o ":" para definir o tipo
             }
             // return true;
         }
@@ -97,10 +102,11 @@ public class Sintatico {
     }
 
     private boolean isIdentifier() {
-        // String token = tokens.get(0).getToken();
+        // String token = tokens.get(0).getNome();
 
-        if (getNextToken().getClassificacao().equals("Identificador")) {
-            if (getNextToken().getToken().equals(",")) {
+        if (getNextToken().getTipo().equals("Identificador")) {
+            if (getNextTokenWithoutRemoving().getNome().equals(",")) {
+                removeCurrentToken();
                 if (isIdentifier()){
                     return true; 
                 }
@@ -112,20 +118,15 @@ public class Sintatico {
             return false;
             
         }
-
+        return true; //so pra parar de ficar vermelho, nao testei o sentido ainda
     }
 
     private boolean isType() {
-
-        String[] tipo = { "Integer", "boolean", "real" };
-        String token = getNextToken().getToken();
-        for (int i = 0; i < tipo.length; i++) {
-
-            if (token.equals(tipo[i])) {
+        for (String TIPO1 : TIPO) {
+            if (getNextTokenWithoutRemoving().getNome().matches(TIPO1)) {
+                removeCurrentToken();
                 return true;
-
             }
-            break;
         }
 
         return true;
@@ -135,11 +136,11 @@ public class Sintatico {
     // outro local
     // n sei se isso vai pro semantico ou fica aqui
     private boolean subprograma() {
-        // String token = tokens.get(0).getToken();
+        // String token = tokens.get(0).getNome();
         // verifica se o token é Procedure
-        if (getNextToken().getToken().equals("Procedure")) {
+        if (getNextToken().getNome().equals("Procedure")) {
             tokens.remove(0);
-            if (tokens.get(0).getToken().equals(";")) {
+            if (tokens.get(0).getNome().equals(";")) {
                 // verifica se tem declaraçao de variaveis
                 // Var
                 if (varDeclaration()) {
@@ -155,11 +156,11 @@ public class Sintatico {
 
     // coloquei o mesmo nome la pra n perder o foco
     private boolean compoundComando() {
-        if (tokens.get(0).getToken().equals("begin")) {
+        if (tokens.get(0).getNome().equals("begin")) {
             tokens.remove(0);
             if (comandoOpcional()) {
                 // verificar se é end
-                if (tokens.get(0).getToken().equals("end")) {
+                if (tokens.get(0).getNome().equals("end")) {
                     tokens.remove(0);
                     return true;
                 }
@@ -169,7 +170,7 @@ public class Sintatico {
     }
 
     private boolean comandoOpcional() {
-        if (tokens.get(0).getToken().equals("end")) {
+        if (tokens.get(0).getNome().equals("end")) {
             tokens.remove(0);
             return true;
         }
@@ -178,7 +179,7 @@ public class Sintatico {
 
     private boolean listadeComandos() {
         if (comandos()) {
-            if (tokens.get(0).getToken().equals(";")) {
+            if (tokens.get(0).getNome().equals(";")) {
                 tokens.remove(0);
                 return listadeComandos();
             } else
@@ -189,10 +190,10 @@ public class Sintatico {
 
     private boolean comandos() {
         // obrigação de ser um identificador
-        if (tokens.get(0).getClassificacao().equals("Identificador")) {
+        if (tokens.get(0).getTipo().equals("Identificador")) {
             tokens.remove(0);
             // verifica o ':='
-            if (tokens.get(0).getToken().equals(":=")) {
+            if (tokens.get(0).getNome().equals(":=")) {
 
             }
         }
@@ -200,11 +201,11 @@ public class Sintatico {
     }
     // private boolean chamaProcedimento(){
     // //(
-    // if(tokens.get(0).getToken().equals("(")){
+    // if(tokens.get(0).getNome().equals("(")){
     // tokens.remove(0);
     // //verifica se tem expressão
     // if(listadeExpressoes()){
-    // if(tokens.get(0).getToken().equals(")")){
+    // if(tokens.get(0).getNome().equals(")")){
     // return true;
     // } //else ERRO
     // }
@@ -215,7 +216,7 @@ public class Sintatico {
     // private boolean listadeExpressoes(){
     // if(expressao()){
     // //verifica se tem ,
-    // if(tokens.get(0).getClassificacao().equals("Identificador")){
+    // if(tokens.get(0).getTipo().equals("Identificador")){
     // return listadeExpressoes();
     // }
     // return true;
@@ -236,8 +237,8 @@ public class Sintatico {
     // return false;
     // }
     // private boolean expressaoSimples(){
-    // if(tokens.get(0).getToken().equals("+") ||
-    // tokens.get(0).getToken().equals("-")){
+    // if(tokens.get(0).getNome().equals("+") ||
+    // tokens.get(0).getNome().equals("-")){
     // sinal();//acho q n precisamos ainda
     // termo();
     // }

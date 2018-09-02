@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-// package compiladores;
+package compiladores;
 
 import java.util.ArrayList;
 
@@ -61,7 +56,7 @@ public class Lexico {
         }    
     }
     
-    public void percorreCodigo(){
+    public ArrayList<Token> percorreCodigo(){
         char charAtual;
         while(!codigo.isEmpty()){
             charAtual = limpaCaracteres();
@@ -96,6 +91,8 @@ public class Lexico {
         System.out.flush();
         
         printIgnoradas();
+        
+        return tokens;
     }
     
     private void variavel(){
