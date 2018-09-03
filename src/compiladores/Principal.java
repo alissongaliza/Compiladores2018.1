@@ -31,9 +31,9 @@ public class Principal {
     
     private static ArrayList<Character> leArquivo() throws FileNotFoundException{
         
-//            Scanner s = new Scanner(new File ("/Users/lumo/Documents/Compiladores2018.1/programaPdf.txt")); 
+            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSlide.txt")); 
             // Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt"));
-            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
+//            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
             String linha;
             String linha2 = ""; 
             

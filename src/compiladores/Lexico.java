@@ -215,7 +215,7 @@ public class Lexico {
         codigo.remove(0);
         char atual;
         boolean real = false;
-        boolean tresD = false;
+//        boolean tresD = false;
         boolean inteiro = true;
         boolean erro = false;
         while(!codigo.isEmpty()){
@@ -230,6 +230,7 @@ public class Lexico {
                 if(isDecimal(palavraAcumulada)){
                     palavraAcumulada += atual;
                     inteiro = false;
+                    real = true;
                     codigo.remove(0);
                     
                 }
@@ -239,27 +240,27 @@ public class Lexico {
                 }
                 
             }
-            else if(Character.toString(atual).matches("[xyz]")){
-                
-                if(atual == 'x' && palavraAcumulada.matches("[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
-                    codigo.remove(0);
-                    real = false;
-                    erro=true;
-                }
-                else if(atual == 'y' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
-                    codigo.remove(0);
-                    erro=true;
-                }
-                else if(atual == 'z' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
-                    codigo.remove(0);
-                    erro = false;
-                    tresD = true;
-                    break;
-                }
-            }
+//            else if(Character.toString(atual).matches("[xyz]")){
+//                
+//                if(atual == 'x' && palavraAcumulada.matches("[0-9]+.[0-9]+")){
+//                    palavraAcumulada+=atual;
+//                    codigo.remove(0);
+//                    real = false;
+//                    erro=true;
+//                }
+//                else if(atual == 'y' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+")){
+//                    palavraAcumulada+=atual;
+//                    codigo.remove(0);
+//                    erro=true;
+//                }
+//                else if(atual == 'z' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+")){
+//                    palavraAcumulada+=atual;
+//                    codigo.remove(0);
+//                    erro = false;
+//                    tresD = true;
+//                    break;
+//                }
+//            }
             else{
                 break;
             }
@@ -267,22 +268,23 @@ public class Lexico {
         if(erro){
             while(!(   palavraAcumulada.matches("[0-9]+") 
                     || palavraAcumulada.matches("[0-9]+.[0-9]+") 
-                    || palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z"))){
+//                    || palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z")
+                    )){
                 palavraAcumulada = palavraAcumulada.substring(0, palavraAcumulada.length() - 1);
             }
-            if(palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z")){
-                tresD = true;
-                real= false;
-                inteiro = false;
-            }
-            else if(palavraAcumulada.matches("[0-9]+.[0-9]+")){
+//            if(palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z")){
+//                tresD = true;
+//                real= false;
+//                inteiro = false;
+//            }
+            if(palavraAcumulada.matches("[0-9]+.[0-9]+")){  //mudar para else if ao descomentar o if anterior
                 real = true;
-                tresD= false;
+//                tresD= false;
                 inteiro = false;
             }
             else if(palavraAcumulada.matches("[0-9]+")){
                 real = false;
-                tresD= false;
+//                tresD= false;
                 inteiro = true;
                 
             }
@@ -292,9 +294,9 @@ public class Lexico {
         if (real){
             criaToken(palavraAcumulada, "Numero Real");
         }
-        else if (tresD){
-            criaToken(palavraAcumulada, "Numero 3D");
-        }
+//        else if (tresD){
+//            criaToken(palavraAcumulada, "Numero 3D");
+//        }
         else if (inteiro){
             criaToken(palavraAcumulada, "Numero Inteiro");
         }
