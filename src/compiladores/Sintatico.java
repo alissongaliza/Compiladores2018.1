@@ -11,10 +11,45 @@ public class Sintatico {
     private ArrayList<Token> tokens;
 
     private static final String[] TIPO = new String[] {
-        "[Ii]nteger",
-        "[Rr]eal",
-        "[Bb]oolean"
+        "integer",
+        "real",
+        "boolean"
         };
+    private static final String[] OPERADOR_ADITIVO = new String[]{
+        "+",
+        "-",
+        "or"
+    };
+    private static final String[] OPERADOR_MULTIPLICATIVO = new String[]{
+        "*",
+        "/",
+        "and"
+    };
+    private static final String[] OPERADOR_RELACIONAL = new String[]{
+        "=",
+        "<",
+        ">",
+        "<=",
+        "<=",
+        "<>",
+    };
+    private static final String[] SINAL = new String[]{
+        "+",
+        "-"
+    };
+    
+    private static final String IDENTIFICADOR = "Identificador";
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
+    private static final String INTEIRO = "inteiro";
+    private static final String REAL = "real";
+    private static final String IF = "if";
+    private static final String THEN = "then";
+    private static final String ELSE = "else";
+    private static final String WHILE = "while";
+    private static final String DO = "do";
+    private static final String BEGIN = "begin";
+    private static final String END = "end";
 
     public Sintatico(ArrayList<Token> listaLexico) {
         this.tokens = listaLexico;
@@ -33,223 +68,751 @@ public class Sintatico {
         tokens.remove(0);
     }
 
-    private Token getActualToken() {
+    private Token getCurrentToken() {
         return tokens.get(0);
+    }
+    
+    private int getCurrentTokenPosition(){
+        return tokens.get(0).getNumero();
     }
 
     public boolean program() {
 
-        String token = "";
-        // token = tokens.get(0).getNome();
-
-        boolean validaPrograma = false;
-
-        if (getActualToken().getNome().matches("[Pp]rogram")) {
+        if (getCurrentToken().getNome().matches("[Pp]rogram")) {
             // tokens.remove(0);
             // token = tokens.get(0).getTipo();
-            if (getNextToken().getTipo().equals("Identificador")) {
+            if (getNextToken().getTipo().equals(IDENTIFICADOR)) {
                 // tokens.remove(0);
                 // token += tokens.get(0).getNome();
-                if (getNextToken().getNome().equals(";"))
+                if (getNextToken().getNome().equals(";")){
                     // tokens.remove(0);
-                    if (varDeclaration()) {
-                        if (subprograma()) {
+                    if (declaracoesVariaveis()) {
+                        //pode ser epsilon
+                        if (declaracaoDeSubprogramas()) {
+                            
+                            if(comandoComposto()){
+
+                                if(getNextTokenWithoutRemoving().getNome().equals(".")){
+                                    removeCurrentToken();
+                                    //se chegou aqui deve ter a estrutura do estilo:    program id; declaracoesVariaveis declaracoesSubprogramas comandoComposto .
+                                    return true;
+                                }
+                                else{
+                                    System.err.println("Estrutura basica do programa invalida (Falta '.') na linha " + getCurrentTokenPosition());
+                                    return false;
+                                }
+                            }
+                            else{
+                                System.err.println("Comando composto Invalido na linha " + getCurrentTokenPosition());
+                                return false;
+                            }
 
                         }
+                        else{
+                            System.err.println("Declaracao de subprogramas invalida na linha " + getCurrentTokenPosition());
+                            return false;
+                        }
+                    }
+                    else{
+                        System.err.println("Declaracao de variaveis invalida na linha " + getCurrentTokenPosition());
+                        return false;
                     }
 
+                
+                }
+                else{
+                    System.err.println("Estrutura basica do programa invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Estrutura basica do programa invalida (Falta identificador) na linha" + getCurrentTokenPosition());
+                return false;
             }
         }
-
-        return validaPrograma;
+        else{
+            System.err.println("Estrutura basica do programa invalida (Falta 'program') na linha" + getCurrentTokenPosition());
+            return false;
+        }
     }
 
-    private boolean varDeclaration() {
-        // String token = tokens.get(0).getTipo();
-        if (getNextToken().getNome().matches("[Vv]ar")){
-        // tokens.remove(0);
-            isVar();
+    private boolean declaracoesVariaveis() {
+        
+        if (getNextTokenWithoutRemoving().getNome().matches("[Vv]ar")){
+            removeCurrentToken();
+            if(listaDeclaracoesVariaveis()){
+                return true;
+            }
+            else{
+                System.err.println("Declaracoes variaveis invalida (Falta lista de declaracoes de variaveis) na linha " + getCurrentTokenPosition());
+                return false;
+            }
         }
+        //pode ser epsilon
         return true;
         
     }
 
-    private boolean isVar() {
-        // String token = tokens.get(0).getNome();
+    private boolean listaDeclaracoesVariaveis() {
 
-        if (isIdentifier()) {
-            // tokens.remove(0);
-            if (getNextToken().getNome().equals(":")) {
-//            if (getActualToken().getNome().equals(":")) {
-                // tokens.remove(0);
-                if (isType()) {
-                    // tokens.remove(0);
-                    if (getNextToken().getNome().equals(";")) {
-                        // tokens.remove(0);
-                        if (getNextTokenWithoutRemoving().getTipo().equals("Identificador")) {
-                            isVar();
-                        }
+        if (listaIdentificadores()) {
+            if (getNextTokenWithoutRemoving().getNome().equals(":")) {
+                removeCurrentToken();
+                if (eTipo()) {
+                    removeCurrentToken();
+                    if (getNextTokenWithoutRemoving().getNome().equals(";")) {
+                        removeCurrentToken();
+                        return listaDeclaracoesVariaveisHash();
                     }
+                    else{
+                        System.err.println("Lista de declaracoes de variaveis invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Lista de declaracoes de variaveis invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                    return false;
                 }
             }
             else{
-                // sem o ":" para definir o tipo
+                System.err.println("Lista de declaracoes de variaveis invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                return false;
             }
-            // return true;
-        }
-
-        return true;
-    }
-
-    private boolean isIdentifier() {
-        // String token = tokens.get(0).getNome();
-
-        if (getNextToken().getTipo().equals("Identificador")) {
-            if (getNextTokenWithoutRemoving().getNome().equals(",")) {
-                removeCurrentToken();
-                if (isIdentifier()){
-                    return true; 
-                }
-            }
-            else
-                return true;
         }
         else{
+            System.err.println("Lista de declaracoes de variaveis invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
             return false;
-            
         }
-        return true; //so pra parar de ficar vermelho, nao testei o sentido ainda
-    }
 
-    private boolean isType() {
-        for (String TIPO1 : TIPO) {
-            if (getNextTokenWithoutRemoving().getNome().matches(TIPO1)) {
+    }
+    
+    private boolean listaDeclaracoesVariaveisHash(){
+        
+        if (listaIdentificadores()) {
+            if (getNextTokenWithoutRemoving().getNome().equals(":")) {
                 removeCurrentToken();
-                return true;
+                if (eTipo()) {
+                    removeCurrentToken();
+                    if (getNextTokenWithoutRemoving().getNome().equals(";")) {
+                        removeCurrentToken();
+                        return listaDeclaracoesVariaveisHash();
+                    }
+                    else{
+                        System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Lista de declaracoes de variaveis hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                return false;
             }
         }
-
-        return true;
+        else{
+            //pode ser epsilon
+            return true;
+        }
     }
 
-    // Angel verifica se existe um identificador com o mesmo nome sendo utilizado em
-    // outro local
-    // n sei se isso vai pro semantico ou fica aqui
-    private boolean subprograma() {
-        // String token = tokens.get(0).getNome();
-        // verifica se o token é Procedure
-        if (getNextToken().getNome().equals("Procedure")) {
-            tokens.remove(0);
-            if (tokens.get(0).getNome().equals(";")) {
-                // verifica se tem declaraçao de variaveis
-                // Var
-                if (varDeclaration()) {
-                    if (compoundComando()) {
+    private boolean listaIdentificadores() {
+
+        if(eIdentificador()) {
+            removeCurrentToken();
+            if(listaIdentificadoresHash()){
+                //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
+                return true;
+            }
+            else{
+                System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+            
+        }
+        else{
+            System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+            return false;
+        }
+    }
+    
+    private boolean listaIdentificadoresHash(){
+        
+        if(getNextTokenWithoutRemoving().getNome().equals(",")){
+            if(eIdentificador()) {
+                removeCurrentToken();
+                if(listaIdentificadoresHash()){
+                    //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
+                    return true;
+                }
+                else{
+                    System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+
+            }
+            else{
+                System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        else{
+            //permite epsilon
+            return true;
+        }
+    }
+
+    private boolean declaracaoDeSubprogramas(){
+        if(declaracaoDeSubprogramasHash()){
+            return true;
+        }
+        else{
+            System.err.println("Declaracao de subprogramas invalida (Falta declaracao de subprogramas) na linha " + getCurrentTokenPosition());
+            return false;
+        }
+    }
+    
+    private boolean declaracaoDeSubprogramasHash(){
+        if(declaracaoDeSubprograma()){
+            if(getNextTokenWithoutRemoving().getNome().equals(";")){
+                removeCurrentToken();
+                return declaracaoDeSubprogramasHash();
+            }
+        }
+        //permite epsilon
+        return true;
+    }
+    
+    private boolean declaracaoDeSubprograma() {
+        if (getNextTokenWithoutRemoving().getNome().matches("[Pp]rocedure")) {
+            removeCurrentToken();
+            if (eIdentificador()) {
+                removeCurrentToken();
+                if(argumentos()){
+                    if(getNextTokenWithoutRemoving().getNome().equals(";")){
+                        removeCurrentToken();
+                        if(declaracoesVariaveis())
+                            if(declaracaoDeSubprogramas());
+                                if(comandoComposto())
+                                    return true;
+                    }
+                    else{
+                        System.err.println("Declaracao de subprograma invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                    
+                }
+                else{
+                    System.err.println("Declaracao de subprograma invalida (Falta argumentos) na linha "+ getCurrentTokenPosition());
+                    return false;
+                }          
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean argumentos(){
+        if(getNextTokenWithoutRemoving().getNome().equals("(")){
+            removeCurrentToken();
+            if(listaDeParametros()){
+                if(getNextTokenWithoutRemoving().getNome().equals(")")){
+                    removeCurrentToken();
+                    //se chegou aqui deve ter a estrutura do estilo:          (~lista de argumentos~)
+                    return true;
+                }
+                else{
+                    //se chegou aqui deve ter a estrutura do estilo:    (~lista de agumentos~ ~nao fechou o parenteses~)
+                    System.err.println("Argumento invalido (Falta fechar parenteses) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                //se chegou aqui deve ter a estrutura do estilo:    (~sem argumentos OU argumentos errados~
+                System.err.println("Abriu parenteses e apresentou erros nos parametros ou sem parametros");
+                return false;
+            }
+        }
+        //permite epsilon
+        return true;
+    }
+    
+    private boolean listaDeParametros(){
+        if(listaIdentificadores()){
+            if(getNextTokenWithoutRemoving().getNome().equals(":")){
+                removeCurrentToken();
+                if(eTipo()){
+                    removeCurrentToken();
+                    if(listaDeParametrosHash()){
                         return true;
                     }
                 }
             }
-
         }
+        else{
+            System.err.println("Declaracao de identificadores invalida na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        
         return true;
     }
+    
+    private boolean listaDeParametrosHash(){
+        if(getNextTokenWithoutRemoving().getNome().equals(";")){
+            removeCurrentToken();
+            if(listaIdentificadores()){
+                if(getNextTokenWithoutRemoving().getNome().equals(":")){
+                    if(eTipo()){
+                        return listaDeParametrosHash();
+                    }
+                    else{
+                        System.err.println("Lista de parametros hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Lista de parametros hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Lista de parametros hash invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        else{
+            //permite epsilon
+            return true;
+        }
+    }
 
-    // coloquei o mesmo nome la pra n perder o foco
-    private boolean compoundComando() {
-        if (tokens.get(0).getNome().equals("begin")) {
-            tokens.remove(0);
-            if (comandoOpcional()) {
-                // verificar se é end
-                if (tokens.get(0).getNome().equals("end")) {
-                    tokens.remove(0);
+    private boolean comandoComposto() {
+        if (getNextTokenWithoutRemoving().getNome().equals(BEGIN)) {
+            removeCurrentToken();
+            
+            if(comandosOpcionais()){
+                if (getNextTokenWithoutRemoving().getNome().equals(END)) {
+                    removeCurrentToken();
                     return true;
                 }
+                else{
+                    System.err.println("Comando composto invalido (Falta 'end') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }    
+        }
+        else{
+            System.err.println("Comando composto invalido (Falta 'begin') na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        
+    }
+
+    private boolean comandosOpcionais() {
+        if (listaDeComandos()){
+            return true;
+        }
+        else{
+            //permite epsilon
+            return true;
+        }
+    }
+
+    private boolean listaDeComandos() {
+        if (comando()) {
+            if(listaDeComandosHash()){
+                return true;
+            }
+            else{
+                System.err.println("Lista de comandos invalida (Falta lista de comandos hash) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+            
+        }
+        else{
+            System.err.println("Lista de comandos invalida (Falta comando) na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        
+    }
+    
+    private boolean listaDeComandosHash(){
+        if (getNextTokenWithoutRemoving().getNome().equals(";")) {
+                removeCurrentToken();
+                //se chegou aqui deve ter a estrutura do estilo:        comando; ~com pelo menos mais um comando a frente~
+                if(comando()){
+                    return listaDeComandosHash();
+                }
+                else{
+                    System.err.println("Lista de comandos hash invalida (Falta comando) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+        }
+        else{
+            //permite epsilon
+            return true;
+        }
+    }
+
+    private boolean comando() {
+        
+        if (getNextTokenWithoutRemoving().getTipo().equals(IDENTIFICADOR)) {
+            removeCurrentToken();
+            
+            if (getNextTokenWithoutRemoving().getNome().equals(":=")) {
+                removeCurrentToken();
+                if(expression()){
+                    //se chegou aqui deve ter a estrutura do estilo:    comando ':=' expressao
+                    return true;
+                }
+                else{
+                    System.err.println("Comando desconhecido (Falta Expressao ) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Comando desconhecido (Falta ':=') na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        
+        else if(procedureCall()){
+            
+        }
+        
+        else if(comandoComposto()){
+            
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals(IF)){
+            removeCurrentToken();
+            if(expression()){
+                if(getNextTokenWithoutRemoving().getNome().equals(THEN)){
+                    removeCurrentToken();
+                    if(comando()){
+                        if(elsePart()){
+                            //se chegou aqui deve ter a estrutura do estilo:    if expressao then comando parte_else
+                            return true;
+                        }
+                        //se chegou aqui deve ter a estrutura do estilo:    if expressao then comando
+                        return true;
+                    }
+                    else{
+                        System.err.println("Comando invalido (Falta comando) na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Comando 'if' invalido (Falta 'then') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Comando invalido (Falta expressao) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals(WHILE)){
+            removeCurrentToken();
+            if(expression()){
+                if(getNextTokenWithoutRemoving().getNome().equals(DO)){
+                    removeCurrentToken();
+                    if(comando()){
+                        //se chegou aqui deve ter a estrutura do estilo:    while expressao do comando
+                        return true;
+                    }
+                    else{
+                        System.err.println("Comando 'do' invalido (Falta comando) na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Comando 'while' invalido (Falta 'do') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Comando 'while' invalido (Falta expressao) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        //nenhuma das possibilidades de um comando
+        return false;
+    }
+    
+    private boolean procedureCall(){
+        if(eIdentificador()){
+            if(getNextTokenWithoutRemoving().getNome().equals("(")){
+                if(expressionsList()){
+                    if(getNextTokenWithoutRemoving().getNome().equals(")")){
+                        removeCurrentToken();
+                        //se chegou aqui deve ter a estrutura do estilo:    id (lista de expressoes) 
+                        return true;
+                    }
+                    else{
+                        System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+            }
+            else{
+                //se chegou aqui deve ter a estrutura do estilo:    id
+                return true;
+            }
+        }
+        return false;
+    }
+     
+    private boolean expressionsList(){
+        if(expression()){
+            if(getNextTokenWithoutRemoving().getNome().equals(",")){
+                removeCurrentToken();
+                return expressionsList();
+            }
+            else{
+                //se chegou aqui deve ter a estrutura do estilo:    ~qqr numero de expressoes atras~ expressao
+                return true;
+            }
+        }
+        else{
+            System.err.println("Chamada de procedimento invalida (Faltam argumentos) na linha " + getCurrentTokenPosition());
+            return false;
+        }
+    }
+    
+    private boolean expression(){
+        if(simpleExpression()){
+            if(isRelationalOperator()){
+                if(simpleExpression()){
+                    //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
+                    return true;
+                }
+                else{
+                    System.err.println("Expressao invalida (Esperando expressao simples) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+        }
+        else{
+            System.err.println("Expressao invalida na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        //se chegou aqui deve ter a estrutura do estilo:    expressao
+        return true;
+            
+        
+    }
+    
+    private boolean simpleExpression(){
+        if(term()){
+            simpleExpressionHash();
+        }
+        else if(isSignal()){
+            removeCurrentToken();
+            if(term()){
+                simpleExpressionHash();
+            }
+        }
+        else{
+            System.err.println("Expressao simples invalida na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        //se chegou aqui deve ter a estrutura do estilo:    termo expressaoSimples OU sinal termo expressaoSimples
+        return true;
+    }
+    
+    private boolean simpleExpressionHash(){
+        if(isAdditiveOperator()){
+            if(term()){
+                return simpleExpressionHash();
+            }
+        }
+        //se chegou aqui deve ter a estrutura do estilo:    /(operadorAditivo termo/)*
+        return true;
+    }
+    
+    private boolean term(){
+        if(factor()){
+            termHash();
+            //se chegou aqui deve ter a estrutura do estilo:    fator termoHash OU fator
+            return true;
+        }
+        System.err.println("Termo invalido (Falta fator) na linha " + getCurrentTokenPosition());
+        return false;
+    }
+    
+    private boolean termHash(){
+        if(isMultiplicativeOperator()){
+            if(factor()){
+                termHash();
+                //se chegou aqui deve ter a estrutura do estilo:    operadorMultiplicativo fator termoHash
+                return true;
+            }
+            else {
+                System.err.println("Operador multiplicativo sem fator na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        //termoHash pode ser epsilon
+        return true;
+        
+    }
+    
+    private boolean factor(){
+        if(eIdentificador()){
+            if(getNextTokenWithoutRemoving().getNome().equals("(")){
+                removeCurrentToken();
+                if(expressionsList()){
+                    if(getNextTokenWithoutRemoving().getNome().equals(")")){
+                        removeCurrentToken();
+                    //se chegou aqui deve ter a estrutura do estilo:    id(listaDeExpressoes)
+                        return true;
+                    }
+                    else{
+                        System.err.println("Parenteses nao fechado na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                    
+                }
+                else{
+                    System.err.println("Abriu parenteses sem expressao valida na linha "+ getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            //se chegou aqui deve ter a estrutura do estilo:    id
+            return true;
+        }
+        
+        else if(isIntegerNumber()){
+            removeCurrentToken();
+            return true;
+        }
+        
+        else if(isRealNumber()){
+            removeCurrentToken();
+            return true;
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals(TRUE)){
+            removeCurrentToken();
+            return true;
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals(FALSE)){
+            removeCurrentToken();
+            return true;
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals("(")){
+            removeCurrentToken();
+            if(expression()){
+                if(getNextTokenWithoutRemoving().getNome().equals(")")){
+                    removeCurrentToken();
+                    //se chegou aqui deve ter a estrutura do estilo:    (expressao)
+                    return true;
+                }
+                else{
+                    System.err.println("Parenteses nao fechado apos expressao na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                System.err.println("Abriu parenteses e expressao foi invalida na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        
+        else if(getNextTokenWithoutRemoving().getNome().equals("not")){
+            removeCurrentToken();
+            if(factor()){
+                //se chegou aqui deve ter a estrutura do estilo:    not fator
+                return true;
+            }
+            else{
+                System.err.println("Fator esperado em " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        
+        else{
+            System.err.println("Fator invalido na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        
+    }
+    
+    private boolean elsePart(){
+        if(getNextTokenWithoutRemoving().getNome().equals(ELSE)){
+            if(comando()){
+                //se chegou aqui deve ter a estrutura do estilo:    else command
+                return true;
+            }
+            else{
+                System.err.println("'else' nao acompanhado de um comando na linha " + getCurrentTokenPosition());
+                return false;
             }
         }
         return true;
     }
-
-    private boolean comandoOpcional() {
-        if (tokens.get(0).getNome().equals("end")) {
-            tokens.remove(0);
-            return true;
+    
+    private boolean eTipo() {
+        for (String s : TIPO) {
+            if (getNextTokenWithoutRemoving().getNome().equals(s)) {
+                return true;
+            }
         }
-        return listadeComandos();
+        return false;
     }
-
-    private boolean listadeComandos() {
-        if (comandos()) {
-            if (tokens.get(0).getNome().equals(";")) {
-                tokens.remove(0);
-                return listadeComandos();
-            } else
+    
+    private boolean eIdentificador(){
+        return getNextTokenWithoutRemoving().getTipo().equals(IDENTIFICADOR);
+    }
+    
+    private boolean isIntegerNumber(){
+        return getNextTokenWithoutRemoving().getTipo().equals(INTEIRO);
+    }
+    
+    private boolean isRealNumber(){
+        return getNextTokenWithoutRemoving().getTipo().equals(REAL);
+    }
+    
+    private boolean isSignal(){
+        for (String s : SINAL) {
+            if(s.equals(getNextTokenWithoutRemoving().getNome()))
                 return true;
         }
         return false;
     }
-
-    private boolean comandos() {
-        // obrigação de ser um identificador
-        if (tokens.get(0).getTipo().equals("Identificador")) {
-            tokens.remove(0);
-            // verifica o ':='
-            if (tokens.get(0).getNome().equals(":=")) {
-
-            }
+    
+    private boolean isMultiplicativeOperator(){
+        for (String s : OPERADOR_MULTIPLICATIVO) {
+            if(s.equals(getNextTokenWithoutRemoving().getNome()))
+                return true;
         }
-        return true;
+        return false;
     }
-    // private boolean chamaProcedimento(){
-    // //(
-    // if(tokens.get(0).getNome().equals("(")){
-    // tokens.remove(0);
-    // //verifica se tem expressão
-    // if(listadeExpressoes()){
-    // if(tokens.get(0).getNome().equals(")")){
-    // return true;
-    // } //else ERRO
-    // }
-    // }else
-    // return true;
-    // return false;
-    // }
-    // private boolean listadeExpressoes(){
-    // if(expressao()){
-    // //verifica se tem ,
-    // if(tokens.get(0).getTipo().equals("Identificador")){
-    // return listadeExpressoes();
-    // }
-    // return true;
-    //
-    //
-    // }
-    // return false;
-    // }
-    // private boolean expressao(){
-    // //verifica se é uma simples
-    // if(expressaoSimples()){
-    // //se tem operador Relacional
-    // if(operadorRelacional()){
-    // return true;
-    // }
-    // return true;
-    // }
-    // return false;
-    // }
-    // private boolean expressaoSimples(){
-    // if(tokens.get(0).getNome().equals("+") ||
-    // tokens.get(0).getNome().equals("-")){
-    // sinal();//acho q n precisamos ainda
-    // termo();
-    // }
-    // else{
-    //
-    // }
-    // }
-    // private boolean operadorRelacional(){
-    //
-    // }
-    // private boolean termo(){
-    //
-    // }
+    
+    private boolean isRelationalOperator(){
+        for (String s : OPERADOR_RELACIONAL) {
+            if(s.equals(getNextTokenWithoutRemoving().getNome()))
+                return true;
+        }
+        return false;
+    }
+    
+    private boolean isAdditiveOperator(){
+        for (String s : OPERADOR_ADITIVO) {
+            if(s.equals(getNextTokenWithoutRemoving().getNome()))
+                return true;
+        }
+        return false;
+    }
+    
+   
 }

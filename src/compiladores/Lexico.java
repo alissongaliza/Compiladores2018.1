@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author rhenan
+ * @author Alisson
  */
 public class Lexico {
     
