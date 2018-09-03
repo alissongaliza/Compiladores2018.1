@@ -466,12 +466,12 @@ public class Sintatico {
             
             if (getNextTokenWithoutRemoving().getNome().equals(":=")) {
                 removeCurrentToken();
-                if(expression()){
+                if(expressao()){
                     //se chegou aqui deve ter a estrutura do estilo:    comando ':=' expressao
                     return true;
                 }
                 else{
-                    System.err.println("Comando desconhecido (Falta Expressao ) na linha " + getCurrentTokenPosition());
+                    System.err.println("Comando desconhecido (Falta Expressao) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
@@ -481,17 +481,17 @@ public class Sintatico {
             }
         }
         
-        else if(procedureCall()){
-            
+        else if(chamadaDeProcedure()){
+            return true;
         }
         
         else if(comandoComposto()){
-            
+            return true;
         }
         
         else if(getNextTokenWithoutRemoving().getNome().equals(IF)){
             removeCurrentToken();
-            if(expression()){
+            if(expressao()){
                 if(getNextTokenWithoutRemoving().getNome().equals(THEN)){
                     removeCurrentToken();
                     if(comando()){
@@ -520,7 +520,7 @@ public class Sintatico {
         
         else if(getNextTokenWithoutRemoving().getNome().equals(WHILE)){
             removeCurrentToken();
-            if(expression()){
+            if(expressao()){
                 if(getNextTokenWithoutRemoving().getNome().equals(DO)){
                     removeCurrentToken();
                     if(comando()){
@@ -546,7 +546,7 @@ public class Sintatico {
         return false;
     }
     
-    private boolean procedureCall(){
+    private boolean chamadaDeProcedure(){
         if(eIdentificador()){
             if(getNextTokenWithoutRemoving().getNome().equals("(")){
                 if(expressionsList()){
@@ -570,7 +570,7 @@ public class Sintatico {
     }
      
     private boolean expressionsList(){
-        if(expression()){
+        if(expressao()){
             if(getNextTokenWithoutRemoving().getNome().equals(",")){
                 removeCurrentToken();
                 return expressionsList();
@@ -586,7 +586,7 @@ public class Sintatico {
         }
     }
     
-    private boolean expression(){
+    private boolean expressao(){
         if(simpleExpression()){
             if(isRelationalOperator()){
                 if(simpleExpression()){
@@ -711,7 +711,7 @@ public class Sintatico {
         
         else if(getNextTokenWithoutRemoving().getNome().equals("(")){
             removeCurrentToken();
-            if(expression()){
+            if(expressao()){
                 if(getNextTokenWithoutRemoving().getNome().equals(")")){
                     removeCurrentToken();
                     //se chegou aqui deve ter a estrutura do estilo:    (expressao)
