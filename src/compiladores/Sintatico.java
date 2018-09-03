@@ -403,6 +403,7 @@ public class Sintatico {
                 }
             }
             else{
+                System.err.println("Comando composto invalido (Falta comandos opcionais) na linha " + getCurrentTokenPosition());
                 return false;
             }    
         }
@@ -461,13 +462,13 @@ public class Sintatico {
 
     private boolean comando() {
         
-        if (getNextTokenWithoutRemoving().getTipo().equals(IDENTIFICADOR)) {
+        if (getNextTokenWithoutRemoving().getTipo().equals(IDENTIFICADOR)) {        //TODO: ALTERAR E CRIAR METODO DE VARIAVEL
             removeCurrentToken();
             
             if (getNextTokenWithoutRemoving().getNome().equals(":=")) {
                 removeCurrentToken();
                 if(expressao()){
-                    //se chegou aqui deve ter a estrutura do estilo:    comando ':=' expressao
+                    //se chegou aqui deve ter a estrutura do estilo:    comando := expressao
                     return true;
                 }
                 else{
@@ -481,7 +482,7 @@ public class Sintatico {
             }
         }
         
-        else if(chamadaDeProcedure()){
+        else if(ativacaoDeProcedimento()){
             return true;
         }
         
@@ -495,12 +496,10 @@ public class Sintatico {
                 if(getNextTokenWithoutRemoving().getNome().equals(THEN)){
                     removeCurrentToken();
                     if(comando()){
-                        if(elsePart()){
+                        if(parteElse()){
                             //se chegou aqui deve ter a estrutura do estilo:    if expressao then comando parte_else
                             return true;
                         }
-                        //se chegou aqui deve ter a estrutura do estilo:    if expressao then comando
-                        return true;
                     }
                     else{
                         System.err.println("Comando invalido (Falta comando) na linha " + getCurrentTokenPosition());
@@ -542,14 +541,16 @@ public class Sintatico {
                 return false;
             }
         }
+        
         //nenhuma das possibilidades de um comando
         return false;
     }
     
-    private boolean chamadaDeProcedure(){
+    private boolean ativacaoDeProcedimento(){
         if(eIdentificador()){
+            removeCurrentToken();
             if(getNextTokenWithoutRemoving().getNome().equals("(")){
-                if(expressionsList()){
+                if(listaDeExpressoes()){
                     if(getNextTokenWithoutRemoving().getNome().equals(")")){
                         removeCurrentToken();
                         //se chegou aqui deve ter a estrutura do estilo:    id (lista de expressoes) 
@@ -560,24 +561,31 @@ public class Sintatico {
                         return false;
                     }
                 }
+                else{
+                    System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
             }
             else{
                 //se chegou aqui deve ter a estrutura do estilo:    id
                 return true;
             }
         }
-        return false;
+        else{
+            System.err.println("Ativacao de procedimento invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+            return false;
+        }
+        
     }
      
-    private boolean expressionsList(){
+    private boolean listaDeExpressoes(){
         if(expressao()){
-            if(getNextTokenWithoutRemoving().getNome().equals(",")){
-                removeCurrentToken();
-                return expressionsList();
+            if(listaDeExpressoesHash()){
+                return true;
             }
             else{
-                //se chegou aqui deve ter a estrutura do estilo:    ~qqr numero de expressoes atras~ expressao
-                return true;
+                System.err.println("Lista de expressoes invalida (Falta lista de expressoes hash) na linha " + getCurrentTokenPosition());
+                return false;
             }
         }
         else{
@@ -586,10 +594,28 @@ public class Sintatico {
         }
     }
     
+    private boolean listaDeExpressoesHash(){
+        if(getNextTokenWithoutRemoving().getNome().equals(",")){
+            removeCurrentToken();
+            if(expressao()){
+                return listaDeExpressoesHash();
+
+            }
+            else{
+                System.err.println("Lista de expressoes hash invalida (Falta expressao)" + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        else{
+            //se chegou aqui deve ter a estrutura do estilo:    ~qqr numero de expressoes atras~ expressao
+            return true;
+        }
+    }
+    
     private boolean expressao(){
-        if(simpleExpression()){
+        if(expressaoSimples()){
             if(isRelationalOperator()){
-                if(simpleExpression()){
+                if(expressaoSimples()){
                     //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
                     return true;
                 }
@@ -609,14 +635,14 @@ public class Sintatico {
         
     }
     
-    private boolean simpleExpression(){
-        if(term()){
-            simpleExpressionHash();
+    private boolean expressaoSimples(){
+        if(termo()){
+            expressaoSimplesHash();
         }
         else if(isSignal()){
             removeCurrentToken();
-            if(term()){
-                simpleExpressionHash();
+            if(termo()){
+                expressaoSimplesHash();
             }
         }
         else{
@@ -627,19 +653,19 @@ public class Sintatico {
         return true;
     }
     
-    private boolean simpleExpressionHash(){
+    private boolean expressaoSimplesHash(){
         if(isAdditiveOperator()){
-            if(term()){
-                return simpleExpressionHash();
+            if(termo()){
+                return expressaoSimplesHash();
             }
         }
         //se chegou aqui deve ter a estrutura do estilo:    /(operadorAditivo termo/)*
         return true;
     }
     
-    private boolean term(){
-        if(factor()){
-            termHash();
+    private boolean termo(){
+        if(fator()){
+            termoHash();
             //se chegou aqui deve ter a estrutura do estilo:    fator termoHash OU fator
             return true;
         }
@@ -647,10 +673,10 @@ public class Sintatico {
         return false;
     }
     
-    private boolean termHash(){
+    private boolean termoHash(){
         if(isMultiplicativeOperator()){
-            if(factor()){
-                termHash();
+            if(fator()){
+                termoHash();
                 //se chegou aqui deve ter a estrutura do estilo:    operadorMultiplicativo fator termoHash
                 return true;
             }
@@ -664,11 +690,11 @@ public class Sintatico {
         
     }
     
-    private boolean factor(){
+    private boolean fator(){
         if(eIdentificador()){
             if(getNextTokenWithoutRemoving().getNome().equals("(")){
                 removeCurrentToken();
-                if(expressionsList()){
+                if(listaDeExpressoes()){
                     if(getNextTokenWithoutRemoving().getNome().equals(")")){
                         removeCurrentToken();
                     //se chegou aqui deve ter a estrutura do estilo:    id(listaDeExpressoes)
@@ -730,7 +756,7 @@ public class Sintatico {
         
         else if(getNextTokenWithoutRemoving().getNome().equals("not")){
             removeCurrentToken();
-            if(factor()){
+            if(fator()){
                 //se chegou aqui deve ter a estrutura do estilo:    not fator
                 return true;
             }
@@ -747,8 +773,9 @@ public class Sintatico {
         
     }
     
-    private boolean elsePart(){
+    private boolean parteElse(){
         if(getNextTokenWithoutRemoving().getNome().equals(ELSE)){
+            removeCurrentToken();
             if(comando()){
                 //se chegou aqui deve ter a estrutura do estilo:    else command
                 return true;
@@ -758,7 +785,10 @@ public class Sintatico {
                 return false;
             }
         }
-        return true;
+        else{
+            //parte else pode ser epsilon
+            return true;
+        }
     }
     
     private boolean eTipo() {
