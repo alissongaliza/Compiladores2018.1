@@ -30,7 +30,7 @@ public class Sintatico {
         "<",
         ">",
         "<=",
-        "<=",
+        ">=",
         "<>",
     };
     private static final String[] SINAL = new String[]{
@@ -53,11 +53,6 @@ public class Sintatico {
 
     public Sintatico(ArrayList<Token> listaLexico) {
         this.tokens = listaLexico;
-    }
-
-    private Token getNextToken() {
-        tokens.remove(0);
-        return tokens.get(0);
     }
     
     private void removeCurrentToken(){
@@ -454,9 +449,7 @@ public class Sintatico {
 
     private boolean comando() {
         
-        if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {        //TODO: ALTERAR E CRIAR METODO DE VARIAVEL
-            removeCurrentToken();
-            
+        if (variavel()) {          
             if (getCurrentToken().getNome().equals(":=")) {
                 removeCurrentToken();
                 if(expressao()){
@@ -538,6 +531,16 @@ public class Sintatico {
         return false;
     }
     
+    private boolean variavel(){
+        if(eIdentificador()){
+            removeCurrentToken();
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
     private boolean ativacaoDeProcedimento(){
         if(eIdentificador()){
             removeCurrentToken();
@@ -607,6 +610,7 @@ public class Sintatico {
     private boolean expressao(){
         if(expressaoSimples()){
             if(isRelationalOperator()){
+                removeCurrentToken();
                 if(expressaoSimples()){
                     //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
                     return true;
@@ -647,6 +651,7 @@ public class Sintatico {
     
     private boolean expressaoSimplesHash(){
         if(isAdditiveOperator()){
+            removeCurrentToken();
             if(termo()){
                 return expressaoSimplesHash();
             }
@@ -673,6 +678,7 @@ public class Sintatico {
     
     private boolean termoHash(){
         if(isMultiplicativeOperator()){
+            removeCurrentToken();
             if(fator()){
                 termoHash();
                 //se chegou aqui deve ter a estrutura do estilo:    operadorMultiplicativo fator termoHash
@@ -690,6 +696,7 @@ public class Sintatico {
     
     private boolean fator(){
         if(eIdentificador()){
+            removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
                 removeCurrentToken();
                 if(listaDeExpressoes()){

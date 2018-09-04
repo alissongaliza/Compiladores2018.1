@@ -2,6 +2,7 @@ package compiladores;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,7 +10,7 @@ import java.util.Scanner;
 public class Principal {
    
    
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         try {
             
@@ -29,11 +30,12 @@ public class Principal {
         
     }
     
-    private static ArrayList<Character> leArquivo() throws FileNotFoundException{
+    private static ArrayList<Character> leArquivo() throws FileNotFoundException, IOException{
         
-            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSlide.txt")); 
+//            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSlide.txt")); 
             // Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt"));
-//            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
+            Scanner s1 = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
+            Scanner s = new Scanner(new File("programaSlide.txt").getCanonicalPath());
             String linha;
             String linha2 = ""; 
             
