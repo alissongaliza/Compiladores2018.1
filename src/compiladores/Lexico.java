@@ -9,23 +9,23 @@ import java.util.ArrayList;
 public class Lexico {
     
     private static final String[] PALAVRAS_CHAVES = new String[] {
-    "[Pp]rogram",
-    "[Vv]ar",
-    "[Ii]nteger",
-    "[Rr]eal",
-    "[Bb]oolean",
-    "[Pp]rocedure",
-    "[Bb]egin",
-    "[Ee]nd",
-    "[Ii]f",
-    "[Ee]lse",
-    "[Tt]hen",
-    "[Ww]hile",
-    "[Dd]o",
-    "[Nn]ot",
-    "[Oo]r",
-    "[Tr]rue",
-    "[Ff]alse"
+    "program|PROGRAM",
+    "var|VAR",
+    "integer|INTEGER",
+    "real|REAL",
+    "boolean|BOOLEAN",
+    "procedure|PROCEDURE",
+    "begin|BEGIN",
+    "end|END",
+    "if|IF",
+    "else|ELSE",
+    "then|THEN",
+    "while|WHILE",
+    "do|DO",
+    "not|NOT",
+    "or|OR",
+    "true|TRUE",
+    "false|FALSE"
     };
     
     private int linhaAtual;
@@ -45,7 +45,7 @@ public class Lexico {
     public char limpaCaracteres(){
         
         while(true){
-            if(Character.toString(codigo.get(0)).matches("[\t\r\f\040]"))
+            if(!codigo.isEmpty() && Character.toString(codigo.get(0)).matches("[\t\r\f\040]"))
                codigo.remove(0);
             else if(Character.toString(codigo.get(0)).matches("[\n]")){
                 linhaAtual += 1;
@@ -58,7 +58,10 @@ public class Lexico {
     
     public ArrayList<Token> percorreCodigo(){
         char charAtual;
+        int i = 0;
         while(!codigo.isEmpty()){
+            ++i;
+            System.out.println(i);
             charAtual = limpaCaracteres();
             
             if(Character.toString(charAtual).matches("[a-zA-Z_]"))

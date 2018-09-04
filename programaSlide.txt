@@ -1,5 +1,5 @@
 program resultado;
-    Var N1,N2,N3 : real;
+    var N1,N2,N3 : real;
         S, M : real;
         Result : boolean;
     begin

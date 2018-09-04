@@ -11,9 +11,9 @@ public class Sintatico {
     private ArrayList<Token> tokens;
 
     private static final String[] TIPO = new String[] {
-        "integer",
-        "real",
-        "boolean"
+        "integer|INTEGER",
+        "real|REAL",
+        "boolean|BOOLEAN"
         };
     private static final String[] OPERADOR_ADITIVO = new String[]{
         "+",
@@ -38,18 +38,22 @@ public class Sintatico {
         "-"
     };
     
-    private static final String IDENTIFICADOR = "Identificador";
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
     private static final String INTEIRO = "Numero Inteiro";
     private static final String REAL = "Numero Real";
-    private static final String IF = "if";
-    private static final String THEN = "then";
-    private static final String ELSE = "else";
-    private static final String WHILE = "while";
-    private static final String DO = "do";
-    private static final String BEGIN = "begin";
-    private static final String END = "end";
+    private static final String IDENTIFICADOR = "Identificador";
+    private static final String TRUE = "true|TRUE";
+    private static final String FALSE = "false|FALSE";
+    private static final String IF = "if|IF";
+    private static final String THEN = "then|THEN";
+    private static final String ELSE = "else|ELSE";
+    private static final String WHILE = "while|WHILE";
+    private static final String DO = "do|DO";
+    private static final String BEGIN = "begin|BEGIN";
+    private static final String END = "end|END";
+    private static final String PROGRAM = "program|PROGRAM";
+    private static final String VAR = "var|VAR";
+    private static final String PROCEDURE = "procedure|PROCEDURE";
+    private static final String NOT = "not|NOT";
 
     public Sintatico(ArrayList<Token> listaLexico) {
         this.tokens = listaLexico;
@@ -63,13 +67,17 @@ public class Sintatico {
         return tokens.get(0);
     }
     
+    private Token getNextToken(){
+        return tokens.get(1);
+    }
+    
     private int getCurrentTokenPosition(){
         return tokens.get(0).getNumero();
     }
 
     public boolean program() {
 
-        if (getCurrentToken().getNome().matches("[Pp]rogram")) {
+        if (getCurrentToken().getNome().matches(PROGRAM)) {
             removeCurrentToken();
             if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {
                 removeCurrentToken();
@@ -124,7 +132,7 @@ public class Sintatico {
 
     private boolean declaracoesVariaveis() {
         
-        if (getCurrentToken().getNome().matches("[Vv]ar")){
+        if (getCurrentToken().getNome().matches(VAR)){
             removeCurrentToken();
             if(listaDeclaracoesVariaveis()){
                 return true;
@@ -273,7 +281,7 @@ public class Sintatico {
     }
     
     private boolean declaracaoDeSubprograma() {
-        if (getCurrentToken().getNome().matches("[Pp]rocedure")) {
+        if (getCurrentToken().getNome().matches(PROCEDURE)) {
             removeCurrentToken();
             if (eIdentificador()) {
                 removeCurrentToken();
@@ -351,7 +359,9 @@ public class Sintatico {
             removeCurrentToken();
             if(listaIdentificadores()){
                 if(getCurrentToken().getNome().equals(":")){
+                    removeCurrentToken();
                     if(eTipo()){
+                        removeCurrentToken();
                         return listaDeParametrosHash();
                     }
                     else{
@@ -376,11 +386,11 @@ public class Sintatico {
     }
 
     private boolean comandoComposto() {
-        if (getCurrentToken().getNome().equals(BEGIN)) {
+        if (getCurrentToken().getNome().matches(BEGIN)) {
             removeCurrentToken();
             
             if(comandosOpcionais()){
-                if (getCurrentToken().getNome().equals(END)) {
+                if (getCurrentToken().getNome().matches(END)) {
                     removeCurrentToken();
                     return true;
                 }
@@ -461,9 +471,23 @@ public class Sintatico {
                     return false;
                 }
             }
-            else{
-                System.err.println("Comando desconhecido (Falta ':=') na linha " + getCurrentTokenPosition());
-                return false;
+            else if(getCurrentToken().getNome().equals("(")){
+                removeCurrentToken();
+                if(listaDeExpressoes()){
+                    if(getCurrentToken().getNome().equals(")")){
+                        removeCurrentToken();
+                        //se chegou aqui deve ter a estrutura do estilo:    id (lista de expressoes) 
+                        return true;
+                    }
+                    else{
+                        System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
+                    return false;
+                }
             }
         }
         
@@ -475,10 +499,10 @@ public class Sintatico {
             return true;
         }
         
-        else if(getCurrentToken().getNome().equals(IF)){
+        else if(getCurrentToken().getNome().matches(IF)){
             removeCurrentToken();
             if(expressao()){
-                if(getCurrentToken().getNome().equals(THEN)){
+                if(getCurrentToken().getNome().matches(THEN)){
                     removeCurrentToken();
                     if(comando()){
                         if(parteElse()){
@@ -502,10 +526,10 @@ public class Sintatico {
             }
         }
         
-        else if(getCurrentToken().getNome().equals(WHILE)){
+        else if(getCurrentToken().getNome().matches(WHILE)){
             removeCurrentToken();
             if(expressao()){
-                if(getCurrentToken().getNome().equals(DO)){
+                if(getCurrentToken().getNome().matches(DO)){
                     removeCurrentToken();
                     if(comando()){
                         //se chegou aqui deve ter a estrutura do estilo:    while expressao do comando
@@ -730,12 +754,12 @@ public class Sintatico {
             return true;
         }
         
-        else if(getCurrentToken().getNome().equals(TRUE)){
+        else if(getCurrentToken().getNome().matches(TRUE)){
             removeCurrentToken();
             return true;
         }
         
-        else if(getCurrentToken().getNome().equals(FALSE)){
+        else if(getCurrentToken().getNome().matches(FALSE)){
             removeCurrentToken();
             return true;
         }
@@ -759,7 +783,7 @@ public class Sintatico {
             }
         }
         
-        else if(getCurrentToken().getNome().equals("not")){
+        else if(getCurrentToken().getNome().matches(NOT)){
             removeCurrentToken();
             if(fator()){
                 //se chegou aqui deve ter a estrutura do estilo:    not fator
@@ -779,7 +803,7 @@ public class Sintatico {
     }
     
     private boolean parteElse(){
-        if(getCurrentToken().getNome().equals(ELSE)){
+        if(getCurrentToken().getNome().matches(ELSE)){
             removeCurrentToken();
             if(comando()){
                 //se chegou aqui deve ter a estrutura do estilo:    else command
@@ -798,7 +822,7 @@ public class Sintatico {
     
     private boolean eTipo() {
         for (String s : TIPO) {
-            if (getCurrentToken().getNome().equals(s)) {
+            if (getCurrentToken().getNome().matches(s)) {
                 return true;
             }
         }
@@ -806,7 +830,7 @@ public class Sintatico {
     }
     
     private boolean eIdentificador(){
-        return getCurrentToken().getTipo().equals(IDENTIFICADOR);
+        return getCurrentToken().getTipo().matches(IDENTIFICADOR);
     }
     
     private boolean isIntegerNumber(){
