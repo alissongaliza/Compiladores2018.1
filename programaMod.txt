@@ -1,0 +1,9 @@
+program Test3; {programa para teste do lexico}
+var
+   NUMERO, x  : integer;
+   final,y   : integer;
+begin
+   do
+		y := x + y
+	while (x < 0)
+end.

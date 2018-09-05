@@ -40,7 +40,7 @@ public class Principal {
         
 //            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSite.txt"));
 //            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt"));
-            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSite.txt"));
+            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaMod.txt"));
             String linha;
             String linha2 = "";
             while (s.hasNextLine()) {

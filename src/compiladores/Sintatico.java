@@ -92,40 +92,40 @@ public class Sintatico {
                                     return true;
                                 }
                                 else{
-                                    //System.err.println("Estrutura basica do programa invalida (Falta '.') na linha " + getCurrentTokenPosition());
+                                    System.err.println("Estrutura basica do programa invalida (Falta '.') na linha " + getCurrentTokenPosition());
                                     return false;
                                 }
                             }
                             else{
-                                //System.err.println("Comando composto Invalido na linha " + getCurrentTokenPosition());
+                                System.err.println("Comando composto Invalido na linha " + getCurrentTokenPosition());
                                 return false;
                             }
 
                         }
                         else{
-                            //System.err.println("Declaracao de subprogramas invalida na linha " + getCurrentTokenPosition());
+                            System.err.println("Declaracao de subprogramas invalida na linha " + getCurrentTokenPosition());
                             return false;
                         }
                     }
                     else{
-                        //System.err.println("Declaracao de variaveis invalida na linha " + getCurrentTokenPosition());
+                        System.err.println("Declaracao de variaveis invalida na linha " + getCurrentTokenPosition());
                         return false;
                     }
 
                 
                 }
                 else{
-                    //System.err.println("Estrutura basica do programa invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                    System.err.println("Estrutura basica do programa invalida (Falta ';') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                //System.err.println("Estrutura basica do programa invalida (Falta identificador) na linha" + getCurrentTokenPosition());
+                System.err.println("Estrutura basica do programa invalida (Falta identificador) na linha" + getCurrentTokenPosition());
                 return false;
             }
         }
         else{
-            //System.err.println("Estrutura basica do programa invalida (Falta 'program') na linha" + getCurrentTokenPosition());
+            System.err.println("Estrutura basica do programa invalida (Falta 'program') na linha" + getCurrentTokenPosition());
             return false;
         }
     }
@@ -532,6 +532,31 @@ public class Sintatico {
                 if(getCurrentToken().getNome().matches(DO)){
                     removeCurrentToken();
                     if(comando()){
+                        //se chegou aqui deve ter a estrutura do estilo:    while expressao do comando
+                        return true;
+                    }
+                    else{
+                        //System.err.println("Comando 'do' invalido (Falta comando) na linha " + getCurrentTokenPosition());
+                        return false;
+                    }
+                }
+                else{
+                    //System.err.println("Comando 'while' invalido (Falta 'do') na linha " + getCurrentTokenPosition());
+                    return false;
+                }
+            }
+            else{
+                //System.err.println("Comando 'while' invalido (Falta expressao) na linha " + getCurrentTokenPosition());
+                return false;
+            }
+        }
+        
+        else if(getCurrentToken().getNome().matches(DO)){
+            removeCurrentToken();
+            if(comando()){
+                if(getCurrentToken().getNome().matches(WHILE)){
+                    removeCurrentToken();
+                    if(expressao()){
                         //se chegou aqui deve ter a estrutura do estilo:    while expressao do comando
                         return true;
                     }
