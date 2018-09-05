@@ -58,10 +58,7 @@ public class Lexico {
     
     public ArrayList<Token> percorreCodigo(){
         char charAtual;
-        int i = 0;
         while(!codigo.isEmpty()){
-            ++i;
-            System.out.println(i);
             charAtual = limpaCaracteres();
             
             if(Character.toString(charAtual).matches("[a-zA-Z_]"))

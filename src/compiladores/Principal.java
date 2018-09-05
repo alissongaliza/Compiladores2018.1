@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 
 public class Principal {
@@ -21,7 +22,12 @@ public class Principal {
             ArrayList<Token> tokens = lexico.percorreCodigo();
             
             Sintatico sintatico = new Sintatico ((ArrayList<Token>)tokens.clone());
-            sintatico.program();
+            
+            if(sintatico.program())
+                JOptionPane.showMessageDialog(null,("Sintatico concluído com sucesso"));
+            else{
+                JOptionPane.showMessageDialog(null,("Houve problemas com o analisador sintatico"));
+            }
               
         } catch (FileNotFoundException e) {
             System.err.println(e);
@@ -32,9 +38,9 @@ public class Principal {
     
     private static ArrayList<Character> leArquivo() throws FileNotFoundException, IOException{
         
-            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSite.txt"));
+//            Scanner s = new Scanner(new File ("/home/lumo/Compiladores2018.1/programaSite.txt"));
 //            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt"));
-//            Scanner s1 = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
+            Scanner s = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSite.txt"));
             String linha;
             String linha2 = "";
             while (s.hasNextLine()) {

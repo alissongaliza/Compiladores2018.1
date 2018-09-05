@@ -92,40 +92,40 @@ public class Sintatico {
                                     return true;
                                 }
                                 else{
-                                    System.err.println("Estrutura basica do programa invalida (Falta '.') na linha " + getCurrentTokenPosition());
+                                    //System.err.println("Estrutura basica do programa invalida (Falta '.') na linha " + getCurrentTokenPosition());
                                     return false;
                                 }
                             }
                             else{
-                                System.err.println("Comando composto Invalido na linha " + getCurrentTokenPosition());
+                                //System.err.println("Comando composto Invalido na linha " + getCurrentTokenPosition());
                                 return false;
                             }
 
                         }
                         else{
-                            System.err.println("Declaracao de subprogramas invalida na linha " + getCurrentTokenPosition());
+                            //System.err.println("Declaracao de subprogramas invalida na linha " + getCurrentTokenPosition());
                             return false;
                         }
                     }
                     else{
-                        System.err.println("Declaracao de variaveis invalida na linha " + getCurrentTokenPosition());
+                        //System.err.println("Declaracao de variaveis invalida na linha " + getCurrentTokenPosition());
                         return false;
                     }
 
                 
                 }
                 else{
-                    System.err.println("Estrutura basica do programa invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                    //System.err.println("Estrutura basica do programa invalida (Falta ';') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Estrutura basica do programa invalida (Falta identificador) na linha" + getCurrentTokenPosition());
+                //System.err.println("Estrutura basica do programa invalida (Falta identificador) na linha" + getCurrentTokenPosition());
                 return false;
             }
         }
         else{
-            System.err.println("Estrutura basica do programa invalida (Falta 'program') na linha" + getCurrentTokenPosition());
+            //System.err.println("Estrutura basica do programa invalida (Falta 'program') na linha" + getCurrentTokenPosition());
             return false;
         }
     }
@@ -138,7 +138,7 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("Declaracoes variaveis invalida (Falta lista de declaracoes de variaveis) na linha " + getCurrentTokenPosition());
+                //System.err.println("Declaracoes variaveis invalida (Falta lista de declaracoes de variaveis) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -159,22 +159,22 @@ public class Sintatico {
                         return listaDeclaracoesVariaveisHash();
                     }
                     else{
-                        System.err.println("Lista de declaracoes de variaveis invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        //System.err.println("Lista de declaracoes de variaveis invalida (Falta ';') na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Lista de declaracoes de variaveis invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Lista de declaracoes de variaveis invalida (Falta tipo) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Lista de declaracoes de variaveis invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de declaracoes de variaveis invalida (Falta ':') na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
         else{
-            System.err.println("Lista de declaracoes de variaveis invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
+            //System.err.println("Lista de declaracoes de variaveis invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
             return false;
         }
 
@@ -192,17 +192,17 @@ public class Sintatico {
                         return listaDeclaracoesVariaveisHash();
                     }
                     else{
-                        System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        //System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ';') na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Lista de declaracoes de variaveis hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Lista de declaracoes de variaveis hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de declaracoes de variaveis hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -221,13 +221,13 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
                 return false;
             }
             
         }
         else{
-            System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+            //System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
             return false;
         }
     }
@@ -243,13 +243,13 @@ public class Sintatico {
                     return true;
                 }
                 else{
-                    System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Lista de identificadores invalida (Falta lista de identificadores hash) na linha " + getCurrentTokenPosition());
                     return false;
                 }
 
             }
             else{
-                System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de identificadores invalida (Falta identificador) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -264,7 +264,7 @@ public class Sintatico {
             return true;
         }
         else{
-            System.err.println("Declaracao de subprogramas invalida (Falta declaracao de subprogramas) na linha " + getCurrentTokenPosition());
+            //System.err.println("Declaracao de subprogramas invalida (Falta declaracao de subprogramas) na linha " + getCurrentTokenPosition());
             return false;
         }
     }
@@ -294,13 +294,13 @@ public class Sintatico {
                                     return true;
                     }
                     else{
-                        System.err.println("Declaracao de subprograma invalida (Falta ';') na linha " + getCurrentTokenPosition());
+                        //System.err.println("Declaracao de subprograma invalida (Falta ';') na linha " + getCurrentTokenPosition());
                         return false;
                     }
                     
                 }
                 else{
-                    System.err.println("Declaracao de subprograma invalida (Falta argumentos) na linha "+ getCurrentTokenPosition());
+                    //System.err.println("Declaracao de subprograma invalida (Falta argumentos) na linha "+ getCurrentTokenPosition());
                     return false;
                 }          
             }
@@ -320,13 +320,13 @@ public class Sintatico {
                 }
                 else{
                     //se chegou aqui deve ter a estrutura do estilo:    (~lista de agumentos~ ~nao fechou o parenteses~)
-                    System.err.println("Argumento invalido (Falta fechar parenteses) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Argumento invalido (Falta fechar parenteses) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
                 //se chegou aqui deve ter a estrutura do estilo:    (~sem argumentos OU argumentos errados~
-                System.err.println("Abriu parenteses e apresentou erros nos parametros ou sem parametros");
+                //System.err.println("Abriu parenteses e apresentou erros nos parametros ou sem parametros");
                 return false;
             }
         }
@@ -347,7 +347,7 @@ public class Sintatico {
             }
         }
         else{
-            System.err.println("Declaracao de identificadores invalida na linha " + getCurrentTokenPosition());
+            //System.err.println("Declaracao de identificadores invalida na linha " + getCurrentTokenPosition());
             return false;
         }
         
@@ -365,17 +365,17 @@ public class Sintatico {
                         return listaDeParametrosHash();
                     }
                     else{
-                        System.err.println("Lista de parametros hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
+                        //System.err.println("Lista de parametros hash invalida (Falta tipo) na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Lista de parametros hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
+                    //System.err.println("Lista de parametros hash invalida (Falta ':') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Lista de parametros hash invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de parametros hash invalida (Falta lista de identificadores) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -395,17 +395,17 @@ public class Sintatico {
                     return true;
                 }
                 else{
-                    System.err.println("Comando composto invalido (Falta 'end') na linha " + getCurrentTokenPosition());
+                    //System.err.println("Comando composto invalido (Falta 'end') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Comando composto invalido (Falta comandos opcionais) na linha " + getCurrentTokenPosition());
+                //System.err.println("Comando composto invalido (Falta comandos opcionais) na linha " + getCurrentTokenPosition());
                 return false;
             }    
         }
         else{
-            System.err.println("Comando composto invalido (Falta 'begin') na linha " + getCurrentTokenPosition());
+            //System.err.println("Comando composto invalido (Falta 'begin') na linha " + getCurrentTokenPosition());
             return false;
         }
         
@@ -427,13 +427,13 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("Lista de comandos invalida (Falta lista de comandos hash) na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de comandos invalida (Falta lista de comandos hash) na linha " + getCurrentTokenPosition());
                 return false;
             }
             
         }
         else{
-            System.err.println("Lista de comandos invalida (Falta comando) na linha " + getCurrentTokenPosition());
+            //System.err.println("Lista de comandos invalida (Falta comando) na linha " + getCurrentTokenPosition());
             return false;
         }
         
@@ -447,7 +447,7 @@ public class Sintatico {
                     return listaDeComandosHash();
                 }
                 else{
-                    System.err.println("Lista de comandos hash invalida (Falta comando) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Lista de comandos hash invalida (Falta comando) na linha " + getCurrentTokenPosition());
                     return false;
                 }
         }
@@ -467,7 +467,7 @@ public class Sintatico {
                     return true;
                 }
                 else{
-                    System.err.println("Comando desconhecido (Falta Expressao) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Comando desconhecido (Falta Expressao) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
@@ -480,12 +480,12 @@ public class Sintatico {
                         return true;
                     }
                     else{
-                        System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
+                        //System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
@@ -511,17 +511,17 @@ public class Sintatico {
                         }
                     }
                     else{
-                        System.err.println("Comando invalido (Falta comando) na linha " + getCurrentTokenPosition());
+                        //System.err.println("Comando invalido (Falta comando) na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Comando 'if' invalido (Falta 'then') na linha " + getCurrentTokenPosition());
+                    //System.err.println("Comando 'if' invalido (Falta 'then') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Comando invalido (Falta expressao) na linha " + getCurrentTokenPosition());
+                //System.err.println("Comando invalido (Falta expressao) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -536,17 +536,17 @@ public class Sintatico {
                         return true;
                     }
                     else{
-                        System.err.println("Comando 'do' invalido (Falta comando) na linha " + getCurrentTokenPosition());
+                        //System.err.println("Comando 'do' invalido (Falta comando) na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Comando 'while' invalido (Falta 'do') na linha " + getCurrentTokenPosition());
+                    //System.err.println("Comando 'while' invalido (Falta 'do') na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Comando 'while' invalido (Falta expressao) na linha " + getCurrentTokenPosition());
+                //System.err.println("Comando 'while' invalido (Falta expressao) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -576,12 +576,12 @@ public class Sintatico {
                         return true;
                     }
                     else{
-                        System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
+                        //System.err.println("Nao fechou o parenteses na linha " + getCurrentTokenPosition());
                         return false;
                     }
                 }
                 else{
-                    System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Ativacao de procedimento invalida (Falta lista de expressoes) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
@@ -591,7 +591,7 @@ public class Sintatico {
             }
         }
         else{
-            System.err.println("Ativacao de procedimento invalida (Falta identificador) na linha " + getCurrentTokenPosition());
+            //System.err.println("Ativacao de procedimento invalida (Falta identificador) na linha " + getCurrentTokenPosition());
             return false;
         }
         
@@ -603,12 +603,12 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("Lista de expressoes invalida (Falta lista de expressoes hash) na linha " + getCurrentTokenPosition());
+                //System.err.println("Lista de expressoes invalida (Falta lista de expressoes hash) na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
         else{
-            System.err.println("Chamada de procedimento invalida (Faltam argumentos) na linha " + getCurrentTokenPosition());
+            //System.err.println("Chamada de procedimento invalida (Faltam argumentos) na linha " + getCurrentTokenPosition());
             return false;
         }
     }
@@ -621,7 +621,7 @@ public class Sintatico {
 
             }
             else{
-                System.err.println("Lista de expressoes hash invalida (Falta expressao)" + getCurrentTokenPosition());
+                //System.err.println("Lista de expressoes hash invalida (Falta expressao)" + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -640,13 +640,13 @@ public class Sintatico {
                     return true;
                 }
                 else{
-                    System.err.println("Expressao invalida (Esperando expressao simples) na linha " + getCurrentTokenPosition());
+                    //System.err.println("Expressao invalida (Esperando expressao simples) na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
         }
         else{
-            System.err.println("Expressao invalida na linha " + getCurrentTokenPosition());
+            //System.err.println("Expressao invalida na linha " + getCurrentTokenPosition());
             return false;
         }
         //se chegou aqui deve ter a estrutura do estilo:    expressao
@@ -666,7 +666,7 @@ public class Sintatico {
             }
         }
         else{
-            System.err.println("Expressao simples invalida na linha " + getCurrentTokenPosition());
+            //System.err.println("Expressao simples invalida na linha " + getCurrentTokenPosition());
             return false;
         }
         //se chegou aqui deve ter a estrutura do estilo:    termo expressaoSimples OU sinal termo expressaoSimples
@@ -695,7 +695,7 @@ public class Sintatico {
             }
         }
         else{
-            System.err.println("Termo invalido (Falta fator) na linha " + getCurrentTokenPosition());
+            //System.err.println("Termo invalido (Falta fator) na linha " + getCurrentTokenPosition());
             return false;
         }
     }
@@ -709,7 +709,7 @@ public class Sintatico {
                 return true;
             }
             else {
-                System.err.println("Operador multiplicativo sem fator na linha " + getCurrentTokenPosition());
+                //System.err.println("Operador multiplicativo sem fator na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -730,13 +730,13 @@ public class Sintatico {
                         return true;
                     }
                     else{
-                        System.err.println("Parenteses nao fechado na linha " + getCurrentTokenPosition());
+                        //System.err.println("Parenteses nao fechado na linha " + getCurrentTokenPosition());
                         return false;
                     }
                     
                 }
                 else{
-                    System.err.println("Abriu parenteses sem expressao valida na linha "+ getCurrentTokenPosition());
+                    //System.err.println("Abriu parenteses sem expressao valida na linha "+ getCurrentTokenPosition());
                     return false;
                 }
             }
@@ -773,12 +773,12 @@ public class Sintatico {
                     return true;
                 }
                 else{
-                    System.err.println("Parenteses nao fechado apos expressao na linha " + getCurrentTokenPosition());
+                    //System.err.println("Parenteses nao fechado apos expressao na linha " + getCurrentTokenPosition());
                     return false;
                 }
             }
             else{
-                System.err.println("Abriu parenteses e expressao foi invalida na linha " + getCurrentTokenPosition());
+                //System.err.println("Abriu parenteses e expressao foi invalida na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
@@ -790,13 +790,13 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("Fator esperado em " + getCurrentTokenPosition());
+                //System.err.println("Fator esperado em " + getCurrentTokenPosition());
                 return false;
             }
         }
         
         else{
-            System.err.println("Fator invalido na linha " + getCurrentTokenPosition());
+            //System.err.println("Fator invalido na linha " + getCurrentTokenPosition());
             return false;
         }
         
@@ -810,7 +810,7 @@ public class Sintatico {
                 return true;
             }
             else{
-                System.err.println("'else' nao acompanhado de um comando na linha " + getCurrentTokenPosition());
+                //System.err.println("'else' nao acompanhado de um comando na linha " + getCurrentTokenPosition());
                 return false;
             }
         }
