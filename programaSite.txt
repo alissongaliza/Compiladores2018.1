@@ -1,4 +1,4 @@
-PROGRAM Sort;
+PROGRAM Sort;//
     VAR
         i, j, tmp, size: integer;
         arr: boolean;
