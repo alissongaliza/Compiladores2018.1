@@ -78,9 +78,9 @@ public class Sintatico {
     }
 
     public boolean program() {
-        s.pilhaRecorrencia.push(new Token("#","-",0));
         
         if (getCurrentToken().getNome().matches(PROGRAM)) {
+            s.pilhaRecorrencia.push(new Token("#","Marcador"));
             s.incEscopo();
             removeCurrentToken();
             if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {
@@ -282,7 +282,7 @@ public class Sintatico {
             removeCurrentToken();
             if (eIdentificador()) {
                 s.pilhaRecorrencia.push(getCurrentToken());  
-                s.pilhaRecorrencia.push(new Token("#","-",0));
+                s.pilhaRecorrencia.push(new Token("#","Marcador"));
                 s.incEscopo();
                 removeCurrentToken();
                 if(argumentos()){
@@ -572,7 +572,7 @@ public class Sintatico {
     
     private boolean variavel(){
         if(eIdentificador()){
-            if(!s.recorrencia(getCurrentToken()))
+            if(!s.analisaExistencia(getCurrentToken()))
                 System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             return true;
@@ -584,7 +584,7 @@ public class Sintatico {
     
     private boolean ativacaoDeProcedimento(){
         if(eIdentificador()){
-            if(!s.recorrencia(getCurrentToken()))
+            if(!s.analisaExistencia(getCurrentToken()))
                 System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
@@ -729,7 +729,7 @@ public class Sintatico {
     
     private boolean fator(){
         if(eIdentificador()){
-            if(!s.recorrencia(getCurrentToken()))
+            if(!s.analisaExistencia(getCurrentToken()))
                 System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){

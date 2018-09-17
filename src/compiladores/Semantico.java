@@ -21,15 +21,14 @@ public class Semantico {
     }
     
     public boolean correctEscopo(){
-        boolean retorno = (varEscopo == 0);
-        return retorno;
+        return varEscopo == 0;
     }
     
     public int getEscopo(){
         return varEscopo;
     }
     
-    public boolean recorrencia(Token t){
+    public boolean analisaExistencia(Token t){
         for (int i = pilhaRecorrencia.size()-1; i >= 0 ;i--){
             if(t.getNome().equals(pilhaRecorrencia.get(i).getNome()))
                 return true;
@@ -39,7 +38,8 @@ public class Semantico {
     
     public void desempilhaEscopo(){
         
-        while(pilhaRecorrencia.pop().getNome() != "#");
+        while(pilhaRecorrencia.pop().getNome().equals("#"));
+        
         pilhaRecorrencia.pop();
     }
 }
