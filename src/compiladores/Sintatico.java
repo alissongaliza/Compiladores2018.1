@@ -80,10 +80,9 @@ public class Sintatico {
     public boolean program() {
         
         if (getCurrentToken().getNome().matches(PROGRAM)) {
-            s.pilhaRecorrencia.push(new Token("#","Marcador"));
-            s.incEscopo();
             removeCurrentToken();
             if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {
+                s.pilhaRecorrencia.push(new Token("#","Marcador de Programa"));
                 s.pilhaRecorrencia.push(getCurrentToken());
                 removeCurrentToken();
                 if (getCurrentToken().getNome().equals(";")){
@@ -214,7 +213,6 @@ public class Sintatico {
     private boolean listaIdentificadores() {
 
         if(eIdentificador()) {
-            s.pilhaRecorrencia.push(getCurrentToken());
             removeCurrentToken();
             if(listaIdentificadoresHash()){
                 //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
@@ -236,7 +234,6 @@ public class Sintatico {
         if(getCurrentToken().getNome().equals(",")){
             removeCurrentToken();
             if(eIdentificador()) {
-                s.pilhaRecorrencia.push(getCurrentToken());
                 removeCurrentToken();
                 if(listaIdentificadoresHash()){
                     //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
@@ -282,8 +279,7 @@ public class Sintatico {
             removeCurrentToken();
             if (eIdentificador()) {
                 s.pilhaRecorrencia.push(getCurrentToken());  
-                s.pilhaRecorrencia.push(new Token("#","Marcador"));
-                s.incEscopo();
+                s.pilhaRecorrencia.push(new Token("#","Marcador normal"));
                 removeCurrentToken();
                 if(argumentos()){
                     if(getCurrentToken().getNome().equals(";")){
@@ -380,12 +376,15 @@ public class Sintatico {
     private boolean comandoComposto() {
         if (getCurrentToken().getNome().matches(BEGIN)) {
             removeCurrentToken();
+            s.incEscopo();
             
             if(comandosOpcionais()){
                 if (getCurrentToken().getNome().matches(END)) {
-                    s.desempilhaEscopo();
-                    s.decEscopo();
                     removeCurrentToken();
+                    s.decEscopo();
+                    //se o escopo for 0, posso desempilhar o escopo. SE não for 0, o 'end' foi de algum if/while
+                    if(s.getEscopo() == 0)
+                        s.desempilhaEscopo();
                     return true;
                 }
                 else{
@@ -572,8 +571,6 @@ public class Sintatico {
     
     private boolean variavel(){
         if(eIdentificador()){
-            if(!s.analisaExistencia(getCurrentToken()))
-                System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             return true;
         }
@@ -584,8 +581,6 @@ public class Sintatico {
     
     private boolean ativacaoDeProcedimento(){
         if(eIdentificador()){
-            if(!s.analisaExistencia(getCurrentToken()))
-                System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
                 if(listaDeExpressoes()){
@@ -729,8 +724,6 @@ public class Sintatico {
     
     private boolean fator(){
         if(eIdentificador()){
-            if(!s.analisaExistencia(getCurrentToken()))
-                System.err.println("Erro semantico, identificador"+getCurrentToken()+" não Declarado");
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
                 removeCurrentToken();
@@ -834,7 +827,29 @@ public class Sintatico {
     }
     
     private boolean eIdentificador(){
-        return getCurrentToken().getTipo().matches(IDENTIFICADOR);
+        if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
+            if(s.analisaExistencia(getCurrentToken())){
+                if(s.getEscopo() == 0){
+                    System.err.println("Variavel " + getCurrentToken.getNome() + " ja declarada na linha " + getNUmero());
+                }
+                else{
+                    //ta na pilha e to usando
+                }
+            }
+            
+            else{
+                if(s.getEscopo() > 0){
+                    System.err.println("Variavel " + getCurrentToken.getNome() + " nao declarada na linha " + getNumero());
+                }
+                else{
+                    s.pilhaRecorrencia.push(getCurrentToken());
+                }
+            }
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
     private boolean isIntegerNumber(){

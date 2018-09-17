@@ -38,8 +38,16 @@ public class Semantico {
     
     public void desempilhaEscopo(){
         
-        while(pilhaRecorrencia.pop().getNome().equals("#"));
-        
+        while(pilhaRecorrencia.peek().getNome.equals('#')){
+            pilhaRecorrencia.pop();
+        }
         pilhaRecorrencia.pop();
+        
+        // if(pilha.peek.getTipo().equals("Marcador normal"))
+        //     pilhaRecorrencia.pop()
+        // else{
+
+        // }
+
     }
 }
