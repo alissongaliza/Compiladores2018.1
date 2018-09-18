@@ -13,7 +13,8 @@ public class Sintatico {
     private static final String[] TIPO = new String[] {
         "integer|INTEGER",
         "real|REAL",
-        "boolean|BOOLEAN"
+        "boolean|BOOLEAN",
+        "char|CHAR"
         };
     private static final String[] OPERADOR_ADITIVO = new String[]{
         "+",
@@ -278,7 +279,6 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROCEDURE)) {
             removeCurrentToken();
             if (eIdentificador()) {
-                s.pilhaRecorrencia.push(getCurrentToken());  
                 s.pilhaRecorrencia.push(new Token("#","Marcador normal"));
                 removeCurrentToken();
                 if(argumentos()){
@@ -531,40 +531,7 @@ public class Sintatico {
                 return false;
             }
         }
-        else if (getCurrentToken().getNome().matches(DO)){
-            removeCurrentToken();
-           
-            if (comando()){
-                if(getCurrentToken().getNome().matches(WHILE)){
-                    removeCurrentToken();
-                    if(getCurrentToken().getNome().equals("(")){
-                        removeCurrentToken();
-                       
-                        if (expressao()){
-                        //chegou aqui tem o formato
-                        //do comando while expressao
-                            if(getCurrentToken().getNome().equals(")")){
-                                removeCurrentToken();
-                                return true;
-                            }
-                            else{
-                                System.err.println("parenteses nao fechado na linha "+getCurrentToken().getNumero());
-                                return false;
-                            }
-                        }else{
-                            return false;
-                        }
-                    
-                    } else{
-                        return false;
-                    }
-                }else{
-                    return false;
-                }
-            }else{
-                return false;
-            }
-        }
+        
         //nenhuma das possibilidades de um comando
         return false;
     }
@@ -830,7 +797,8 @@ public class Sintatico {
         if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
             if(s.analisaExistencia(getCurrentToken())){
                 if(s.getEscopo() == 0){
-                    System.err.println("Variavel " + getCurrentToken.getNome() + " ja declarada na linha " + getNUmero());
+                    System.err.println("Variavel " + getCurrentToken().getNome() 
+                            + " ja declarada na linha " + getCurrentToken().getNumero());
                 }
                 else{
                     //ta na pilha e to usando
@@ -839,7 +807,8 @@ public class Sintatico {
             
             else{
                 if(s.getEscopo() > 0){
-                    System.err.println("Variavel " + getCurrentToken.getNome() + " nao declarada na linha " + getNumero());
+                    System.err.println("Variavel " + getCurrentToken().getNome() 
+                            + " nao declarada na linha " + getCurrentToken().getNumero());
                 }
                 else{
                     s.pilhaRecorrencia.push(getCurrentToken());

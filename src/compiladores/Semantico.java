@@ -29,16 +29,27 @@ public class Semantico {
     }
     
     public boolean analisaExistencia(Token t){
-        for (int i = pilhaRecorrencia.size()-1; i >= 0 ;i--){
-            if(t.getNome().equals(pilhaRecorrencia.get(i).getNome()))
-                return true;
+        if(varEscopo == 0){
+            int i = pilhaRecorrencia.size() -1;
+            while(!pilhaRecorrencia.get(i).getNome().equals("#")){
+                if(t.getNome().equals(pilhaRecorrencia.get(i).getNome()))
+                    return false;
+                i--;
+            }
         }
+        else{
+            for (int i = pilhaRecorrencia.size()-1; i >= 0 ;i--){
+                if(t.getNome().equals(pilhaRecorrencia.get(i).getNome()))
+                    return true;
+            }
+        }
+        
         return false;
     }
     
     public void desempilhaEscopo(){
         
-        while(pilhaRecorrencia.peek().getNome.equals('#')){
+        while(!pilhaRecorrencia.peek().getNome().equals("#")){
             pilhaRecorrencia.pop();
         }
         pilhaRecorrencia.pop();

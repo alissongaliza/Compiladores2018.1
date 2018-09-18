@@ -1,9 +1,9 @@
 program teste;
-var a,b:char;
+var a,b:integer;
 procedure p (x:integer);
-var b,c: integer;
+    var b,c: integer;
+    begin
+        b:=x
+    end;
 begin
-b:=x+exemplo;
-a := false;
-end;
 end.
