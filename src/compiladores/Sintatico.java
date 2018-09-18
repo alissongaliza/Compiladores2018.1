@@ -1,7 +1,10 @@
 package compiladores; 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Dayane
@@ -56,7 +59,7 @@ public class Sintatico {
     private static final String PROCEDURE = "procedure|PROCEDURE";
     private static final String NOT = "not|NOT";
     private Semantico s;
-    
+   
     public Sintatico(ArrayList<Token> listaLexico) {
         this.tokens = listaLexico;
         s = new Semantico();
@@ -83,8 +86,8 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROGRAM)) {
             removeCurrentToken();
             if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {
-                s.pilhaRecorrencia.push(new Token("#","Marcador de Programa"));
-                s.pilhaRecorrencia.push(getCurrentToken());
+                s.pilhaEscopoRecorrencia.push(new Token("#","Marcador de Programa"));
+                s.pilhaEscopoRecorrencia.push(getCurrentToken());
                 removeCurrentToken();
                 if (getCurrentToken().getNome().equals(";")){
                     removeCurrentToken();
@@ -94,7 +97,7 @@ public class Sintatico {
                                 if(getCurrentToken().getNome().equals(".")){
                                     removeCurrentToken();
                                     //se chegou aqui deve ter a estrutura do estilo:    program id; declaracoesVariaveis declaracoesSubprogramas comandoComposto.
-                                    JOptionPane.showMessageDialog(null, "success");
+                                    JOptionPane.showMessageDialog(null, "Success");
                                     return true;
                                 }
                                 else{
@@ -159,6 +162,10 @@ public class Sintatico {
             if (getCurrentToken().getNome().equals(":")) {
                 removeCurrentToken();
                 if (eTipo()) {
+                    for(int i = s.variaveisSemTipo.size() - 1; i >= 0; i--){
+                        s.variaveisComTipo.put(s.variaveisSemTipo.get(i).getNome(),getCurrentToken().getNome());
+                    }
+                    s.variaveisSemTipo.clear();
                     removeCurrentToken();
                     if (getCurrentToken().getNome().equals(";")) {
                         removeCurrentToken();
@@ -188,6 +195,10 @@ public class Sintatico {
             if (getCurrentToken().getNome().equals(":")) {
                 removeCurrentToken();
                 if (eTipo()) {
+                    for(int i = s.variaveisSemTipo.size() - 1; i >= 0; i--){
+                        s.variaveisComTipo.put(s.variaveisSemTipo.get(i).getNome(),getCurrentToken().getNome());
+                    }
+                    s.variaveisSemTipo.clear();
                     removeCurrentToken();
                     if (getCurrentToken().getNome().equals(";")) {
                         removeCurrentToken();
@@ -214,6 +225,7 @@ public class Sintatico {
     private boolean listaIdentificadores() {
 
         if(eIdentificador()) {
+            s.variaveisSemTipo.add(getCurrentToken());
             removeCurrentToken();
             if(listaIdentificadoresHash()){
                 //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
@@ -235,6 +247,7 @@ public class Sintatico {
         if(getCurrentToken().getNome().equals(",")){
             removeCurrentToken();
             if(eIdentificador()) {
+                s.variaveisSemTipo.add(getCurrentToken());
                 removeCurrentToken();
                 if(listaIdentificadoresHash()){
                     //se chegou aqui deve ter a estrutura do estilo:          id listaDeIdentificadoresHash
@@ -279,7 +292,7 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROCEDURE)) {
             removeCurrentToken();
             if (eIdentificador()) {
-                s.pilhaRecorrencia.push(new Token("#","Marcador normal"));
+                s.pilhaEscopoRecorrencia.push(new Token("#","Marcador normal"));
                 removeCurrentToken();
                 if(argumentos()){
                     if(getCurrentToken().getNome().equals(";")){
@@ -454,7 +467,10 @@ public class Sintatico {
                 removeCurrentToken();
                 if(expressao()){
                     //se chegou aqui deve ter a estrutura do estilo:    comando := expressao
+                    s.analisaTiposAtribuicao(getCurrentToken().getNumero());
                     return true;
+                        
+                    
                 }
                 else{
                     return false;
@@ -538,6 +554,7 @@ public class Sintatico {
     
     private boolean variavel(){
         if(eIdentificador()){
+            s.pilhaCheckagemDeTipos.add(s.variaveisComTipo.get(getCurrentToken().getNome()));
             removeCurrentToken();
             return true;
         }
@@ -613,6 +630,8 @@ public class Sintatico {
                 removeCurrentToken();
                 if(expressaoSimples()){
                     //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
+                    JOptionPane.showMessageDialog(null, s.analisaTiposExpressao(getCurrentToken().getNumero()));
+                    System.exit(0);
                     return true;
                 }
                 else{
@@ -632,6 +651,7 @@ public class Sintatico {
     private boolean expressaoSimples(){
         if(termo()){
             expressaoSimplesHash();
+            
         }
         else if(isSignal()){
             removeCurrentToken();
@@ -640,6 +660,7 @@ public class Sintatico {
             }
         }
         else{
+            System.err.println("Expressao invalida perto da linha " + getCurrentToken().getNumero());
             return false;
         }
         //se chegou aqui deve ter a estrutura do estilo:    termo expressaoSimples OU sinal termo expressaoSimples
@@ -650,7 +671,12 @@ public class Sintatico {
         if(isAdditiveOperator()){
             removeCurrentToken();
             if(termo()){
-                return expressaoSimplesHash();
+                if(expressaoSimplesHash());
+                    
+                s.analisaTiposExpressao(getCurrentToken().getNumero());
+            }
+            else{
+                return false;
             }
         }
         //se chegou aqui deve ter a estrutura do estilo:    /(operadorAditivo termo/)*
@@ -691,6 +717,8 @@ public class Sintatico {
     
     private boolean fator(){
         if(eIdentificador()){
+            //procura o tipo da variavel numa estrutura auxiliar e adiciona na pilha
+            s.pilhaCheckagemDeTipos.add(s.variaveisComTipo.get(getCurrentToken().getNome()));
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
                 removeCurrentToken();
@@ -714,21 +742,25 @@ public class Sintatico {
         }
         
         else if(isIntegerNumber()){
+            s.pilhaCheckagemDeTipos.add("integer");
             removeCurrentToken();
             return true;
         }
         
         else if(isRealNumber()){
+            s.pilhaCheckagemDeTipos.add("real");
             removeCurrentToken();
             return true;
         }
         
         else if(getCurrentToken().getNome().matches(TRUE)){
+            s.pilhaCheckagemDeTipos.add("boolean");
             removeCurrentToken();
             return true;
         }
         
         else if(getCurrentToken().getNome().matches(FALSE)){
+            s.pilhaCheckagemDeTipos.add("boolean");
             removeCurrentToken();
             return true;
         }
@@ -787,6 +819,7 @@ public class Sintatico {
     private boolean eTipo() {
         for (String s : TIPO) {
             if (getCurrentToken().getNome().matches(s)) {
+                
                 return true;
             }
         }
@@ -797,8 +830,9 @@ public class Sintatico {
         if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
             if(s.analisaExistencia(getCurrentToken())){
                 if(s.getEscopo() == 0){
-                    System.err.println("Variavel " + getCurrentToken().getNome() 
+                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
                             + " ja declarada na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
                 }
                 else{
                     //ta na pilha e to usando
@@ -807,11 +841,12 @@ public class Sintatico {
             
             else{
                 if(s.getEscopo() > 0){
-                    System.err.println("Variavel " + getCurrentToken().getNome() 
+                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
                             + " nao declarada na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
                 }
                 else{
-                    s.pilhaRecorrencia.push(getCurrentToken());
+                    s.pilhaEscopoRecorrencia.push(getCurrentToken());
                 }
             }
             return true;

@@ -1,9 +1,9 @@
 program teste;
-var a,b:integer;
-procedure p (x:integer);
+var a,b:boolean;
+procedure p (x:real);
     var b,c: integer;
     begin
-        b:=x
+        b:=true
     end;
 begin
 end.

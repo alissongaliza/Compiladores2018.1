@@ -126,7 +126,7 @@ public class Lexico {
         else if(palavraAcumulada.matches("[Aa]nd"))
             criaToken(palavraAcumulada, "Aritmetico Multiplicativo");
         else if (palavraAcumulada.matches("true|TRUE")||palavraAcumulada.matches("false|FALSE")){
-            criaToken(palavraAcumulada, "Boolean");
+            criaToken(palavraAcumulada, "boolean");
         }            
         else
             isPalavraReservada(palavraAcumulada);    
@@ -216,13 +216,10 @@ public class Lexico {
             
         
         if (real){
-            criaToken(token, "Numero Real");
-        }
-        else if (tresD){
-            criaToken(token, "Numero 3D");
+            criaToken(token, "real");
         }
         else {
-            criaToken(token, "Numero Inteiro");
+            criaToken(token, "integer");
         }
     }
     
