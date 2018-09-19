@@ -132,6 +132,12 @@ public class Semantico {
             pilhaCheckagemDeTipos.pop();
             return true;
         }
+        else if(pilhaCheckagemDeTipos.peek().equals("integer")
+                && pilhaCheckagemDeTipos.get(pilhaCheckagemDeTipos.size() - 2).equals("real")){
+            pilhaCheckagemDeTipos.pop();
+            return true;
+        }
+        
         else{
             JOptionPane.showMessageDialog(null, "Incompatibilidade de tipo atribuido na linha " + linha);
             System.exit(0);

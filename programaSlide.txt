@@ -1,11 +1,11 @@
 program teste;
 var a,b:boolean;
-procedure p (x:real);
+procedure p (x,d:real);
     var b,c: integer;
     begin
-        b:=12
+        d:=x*b+b
     end;
 begin
 a:= true;
-a := p
+a := true
 end.

@@ -3,6 +3,6 @@ var
     b,c:integer;
     a:boolean;
 begin
-    {b:= c+b;
+    {b:= c+b;}
     a:= a < 3
 end.

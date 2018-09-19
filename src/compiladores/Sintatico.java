@@ -345,6 +345,10 @@ public class Sintatico {
             if(getCurrentToken().getNome().equals(":")){
                 removeCurrentToken();
                 if(eTipo()){
+                    for(int i = s.variaveisSemTipo.size() - 1; i >= 0; i--){
+                        s.variaveisComTipo.put(s.variaveisSemTipo.get(i).getNome(),getCurrentToken().getNome());
+                    }
+                    s.variaveisSemTipo.clear();
                     removeCurrentToken();
                     if(listaDeParametrosHash()){
                         return true;
@@ -624,10 +628,10 @@ public class Sintatico {
             return true;
         }
     }
-    
+
     private boolean expressao(){
         if(expressaoSimples()){
-            if(isRelationalOperator()){
+            if(isRelationalOperator()){ 
                 removeCurrentToken();
                 if(expressaoSimples()){
                     //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
@@ -703,6 +707,7 @@ public class Sintatico {
         if(isMultiplicativeOperator()){
             removeCurrentToken();
             if(fator()){
+                s.analisaTiposExpressao(getCurrentToken().getNumero());
                 termoHash();
                 //se chegou aqui deve ter a estrutura do estilo:    operadorMultiplicativo fator termoHash
                 return true;
