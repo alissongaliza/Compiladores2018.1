@@ -292,6 +292,7 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROCEDURE)) {
             removeCurrentToken();
             if (eIdentificador()) {
+                s.variaveisComTipo.put(getCurrentToken().getNome(), "procedure");
                 s.pilhaEscopoRecorrencia.push(new Token("#","Marcador normal"));
                 removeCurrentToken();
                 if(argumentos()){
@@ -851,6 +852,9 @@ public class Sintatico {
             }
             return true;
         }
+//        else if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
+//            
+//        }
         else{
             return false;
         }
