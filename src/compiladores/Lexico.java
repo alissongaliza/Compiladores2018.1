@@ -12,7 +12,7 @@ public class Lexico {
     private static final String[] PALAVRAS_CHAVES = new String[] {
     "program|PROGRAM",
     "var|VAR",
-    "integer|I+NTEGER",
+    "integer|INTEGER",
     "real|REAL",
     "boolean|BOOLEAN",
     "procedure|PROCEDURE",
