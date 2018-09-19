@@ -7,7 +7,8 @@ import javax.swing.JOptionPane;
 
 public class Semantico {
     
-    public Stack<Token> pilhaEscopoRecorrencia;
+    public Stack<Token> pilhaEscopoRecorrenciaVariaveis;
+    public Stack<Token> pilhaEscopoRecorrenciaProcedimentos;
     public Stack<String> pilhaCheckagemDeTipos;
     private int varEscopo;
     public ArrayList<Token> variaveisSemTipo;
@@ -15,7 +16,8 @@ public class Semantico {
     
     
     public Semantico(){
-        pilhaEscopoRecorrencia = new Stack<>();
+        pilhaEscopoRecorrenciaVariaveis = new Stack<>();
+        pilhaEscopoRecorrenciaProcedimentos = new Stack<>();
         pilhaCheckagemDeTipos = new Stack<>();
         variaveisSemTipo = new ArrayList<>();
         variaveisComTipo = new HashMap<>();
@@ -40,16 +42,37 @@ public class Semantico {
     
     public boolean analisaExistencia(Token t){
         if(varEscopo == 0){
-            int i = pilhaEscopoRecorrencia.size() -1;
-            while(!pilhaEscopoRecorrencia.get(i).getNome().equals("#")){
-                if(t.getNome().equals(pilhaEscopoRecorrencia.get(i).getNome()))
+            int i = pilhaEscopoRecorrenciaVariaveis.size() -1;
+            while(!pilhaEscopoRecorrenciaVariaveis.get(i).getNome().equals("#")){
+                if(t.getNome().equals(pilhaEscopoRecorrenciaVariaveis.get(i).getNome()))
                     return false;
                 i--;
             }
         }
         else{
-            for (int i = pilhaEscopoRecorrencia.size()-1; i >= 0 ;i--){
-                if(t.getNome().equals(pilhaEscopoRecorrencia.get(i).getNome()))
+            for (int i = pilhaEscopoRecorrenciaVariaveis.size()-1; i >= 0 ;i--){
+                if(t.getNome().equals(pilhaEscopoRecorrenciaVariaveis.get(i).getNome()))
+                    return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public boolean analisaExistenciaProcedimento(Token t){
+        if(varEscopo == 0){
+            if(pilhaEscopoRecorrenciaProcedimentos.size() >= 1){
+                int i = pilhaEscopoRecorrenciaProcedimentos.size() -1;
+                while(!pilhaEscopoRecorrenciaProcedimentos.get(i).getNome().equals("#")){
+                    if(t.getNome().equals(pilhaEscopoRecorrenciaProcedimentos.get(i).getNome()))
+                        return false;
+                    i--;
+                }
+            }
+        }
+        else{
+            for (int i = pilhaEscopoRecorrenciaProcedimentos.size()-1; i >= 0 ;i--){
+                if(t.getNome().equals(pilhaEscopoRecorrenciaProcedimentos.get(i).getNome()))
                     return true;
             }
         }
@@ -59,10 +82,11 @@ public class Semantico {
     
     public void desempilhaEscopo(){
         
-        while(!pilhaEscopoRecorrencia.peek().getNome().equals("#")){
-            pilhaEscopoRecorrencia.pop();
+        while(!pilhaEscopoRecorrenciaVariaveis.peek().getNome().equals("#")){
+//            variaveisComTipo.remove(pilhaEscopoRecorrencia.peek().getNome());
+            pilhaEscopoRecorrenciaVariaveis.pop();
         }
-        pilhaEscopoRecorrencia.pop();
+        pilhaEscopoRecorrenciaVariaveis.pop();
         
         // if(pilha.peek.getTipo().equals("Marcador normal"))
         //     pilhaEscopoRecorrencia.pop()

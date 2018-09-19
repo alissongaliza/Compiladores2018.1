@@ -1,11 +1,12 @@
 program teste;
-var a,b:boolean;
-procedure p (x,d:real);
-    var b,c: integer;
+var 
+    p:boolean;
+procedure p (x:boolean);
     begin
-        d:=x*b+b
+        if(x and true)
+        then
+        x:=false
     end;
 begin
-a:= true;
-a := true
+p:=false
 end.

@@ -86,8 +86,8 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROGRAM)) {
             removeCurrentToken();
             if (getCurrentToken().getTipo().equals(IDENTIFICADOR)) {
-                s.pilhaEscopoRecorrencia.push(new Token("#","Marcador de Programa"));
-                s.pilhaEscopoRecorrencia.push(getCurrentToken());
+                s.pilhaEscopoRecorrenciaVariaveis.push(new Token("#","Marcador de Programa"));
+                s.pilhaEscopoRecorrenciaVariaveis.push(getCurrentToken());
                 removeCurrentToken();
                 if (getCurrentToken().getNome().equals(";")){
                     removeCurrentToken();
@@ -222,9 +222,60 @@ public class Sintatico {
         }
     }
 
+    private void verificaExistenciaVariavel(){
+        if(s.analisaExistencia(getCurrentToken())){
+                if(s.getEscopo() == 0){
+                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
+                            + " ja declarada na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
+                }
+                else{
+                    //ta na pilha e to usando
+                }
+            }
+            
+            else{
+                if(s.getEscopo() > 0){
+                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
+                            + " nao declarada na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
+                    
+                }
+                else{
+                    s.pilhaEscopoRecorrenciaVariaveis.push(getCurrentToken());
+                }
+            }
+    }
+    
+    private void verificaExistenciaProcedimento(){
+        if(s.analisaExistenciaProcedimento(getCurrentToken())){
+                if(s.getEscopo() == 0){
+                    JOptionPane.showMessageDialog(null, "Procedimento " + getCurrentToken().getNome() 
+                            + " ja declarado na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
+                }
+                else{
+                    //ta na pilha e to usando
+                }
+            }
+            
+            else{
+                if(s.getEscopo() > 0){
+                    JOptionPane.showMessageDialog(null, "Procedimento " + getCurrentToken().getNome() 
+                            + " nao declarado na linha " + getCurrentToken().getNumero());
+                    System.exit(0);
+                    
+                }
+                else{
+                    s.pilhaEscopoRecorrenciaProcedimentos.push(getCurrentToken());
+                }
+            }
+    }
+    
     private boolean listaIdentificadores() {
 
         if(eIdentificador()) {
+            verificaExistenciaVariavel();
             s.variaveisSemTipo.add(getCurrentToken());
             removeCurrentToken();
             if(listaIdentificadoresHash()){
@@ -247,6 +298,7 @@ public class Sintatico {
         if(getCurrentToken().getNome().equals(",")){
             removeCurrentToken();
             if(eIdentificador()) {
+                verificaExistenciaVariavel();
                 s.variaveisSemTipo.add(getCurrentToken());
                 removeCurrentToken();
                 if(listaIdentificadoresHash()){
@@ -292,8 +344,9 @@ public class Sintatico {
         if (getCurrentToken().getNome().matches(PROCEDURE)) {
             removeCurrentToken();
             if (eIdentificador()) {
-                s.variaveisComTipo.put(getCurrentToken().getNome(), "procedure");
-                s.pilhaEscopoRecorrencia.push(new Token("#","Marcador normal"));
+                verificaExistenciaProcedimento();
+//                s.variaveisComTipo.put(getCurrentToken().getNome(), "procedure");
+                s.pilhaEscopoRecorrenciaVariaveis.push(new Token("#","Marcador normal"));
                 removeCurrentToken();
                 if(argumentos()){
                     if(getCurrentToken().getNome().equals(";")){
@@ -559,6 +612,7 @@ public class Sintatico {
     
     private boolean variavel(){
         if(eIdentificador()){
+            verificaExistenciaVariavel();
             s.pilhaCheckagemDeTipos.add(s.variaveisComTipo.get(getCurrentToken().getNome()));
             removeCurrentToken();
             return true;
@@ -570,11 +624,13 @@ public class Sintatico {
     
     private boolean ativacaoDeProcedimento(){
         if(eIdentificador()){
+            verificaExistenciaProcedimento();
             removeCurrentToken();
             if(getCurrentToken().getNome().equals("(")){
                 if(listaDeExpressoes()){
                     if(getCurrentToken().getNome().equals(")")){
                         removeCurrentToken();
+                        
                         //se chegou aqui deve ter a estrutura do estilo:    id (lista de expressoes) 
                         return true;
                     }
@@ -723,6 +779,7 @@ public class Sintatico {
     
     private boolean fator(){
         if(eIdentificador()){
+            verificaExistenciaVariavel();
             //procura o tipo da variavel numa estrutura auxiliar e adiciona na pilha
             s.pilhaCheckagemDeTipos.add(s.variaveisComTipo.get(getCurrentToken().getNome()));
             removeCurrentToken();
@@ -834,32 +891,10 @@ public class Sintatico {
     
     private boolean eIdentificador(){
         if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
-            if(s.analisaExistencia(getCurrentToken())){
-                if(s.getEscopo() == 0){
-                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
-                            + " ja declarada na linha " + getCurrentToken().getNumero());
-                    System.exit(0);
-                }
-                else{
-                    //ta na pilha e to usando
-                }
-            }
             
-            else{
-                if(s.getEscopo() > 0){
-                    JOptionPane.showMessageDialog(null, "Variavel " + getCurrentToken().getNome() 
-                            + " nao declarada na linha " + getCurrentToken().getNumero());
-                    System.exit(0);
-                }
-                else{
-                    s.pilhaEscopoRecorrencia.push(getCurrentToken());
-                }
-            }
             return true;
         }
-//        else if(getCurrentToken().getTipo().matches(IDENTIFICADOR)){
-//            
-//        }
+        
         else{
             return false;
         }
