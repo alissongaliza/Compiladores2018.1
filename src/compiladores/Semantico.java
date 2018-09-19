@@ -63,9 +63,9 @@ public class Semantico {
         if(varEscopo == 0){
             if(pilhaEscopoRecorrenciaProcedimentos.size() >= 1){
                 int i = pilhaEscopoRecorrenciaProcedimentos.size() -1;
-                while(!pilhaEscopoRecorrenciaProcedimentos.get(i).getNome().equals("#")){
+                while(i>=0){
                     if(t.getNome().equals(pilhaEscopoRecorrenciaProcedimentos.get(i).getNome()))
-                        return false;
+                        return true;
                     i--;
                 }
             }
@@ -128,8 +128,6 @@ public class Semantico {
             return true;
         }
         else{
-            JOptionPane.showMessageDialog(null, "Incompatibilidade de tipos na linha " + linha);
-            System.exit(0);
             return false;
         }
         

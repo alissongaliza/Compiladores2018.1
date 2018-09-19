@@ -3,10 +3,11 @@ var
     p:boolean;
 procedure p (x:boolean);
     begin
-        if(x and true)
+        if(x and (3<5))
         then
         x:=false
     end;
 begin
-p:=false
+p:=false;
+p(3,3)
 end.

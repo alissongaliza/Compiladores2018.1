@@ -691,8 +691,10 @@ public class Sintatico {
                 removeCurrentToken();
                 if(expressaoSimples()){
                     //se chegou aqui deve ter a estrutura do estilo:    expressao operadorRelacional expressao
-                    JOptionPane.showMessageDialog(null, s.analisaTiposExpressao(getCurrentToken().getNumero()));
-                    System.exit(0);
+                    if(!s.analisaTiposExpressao(getCurrentToken().getNumero())){
+                        JOptionPane.showMessageDialog(null, "expressao invalida");
+                        System.exit(0);
+                    }
                     return true;
                 }
                 else{

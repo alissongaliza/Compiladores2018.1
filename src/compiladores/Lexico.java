@@ -348,17 +348,20 @@ public class Lexico {
         char atual;
         while(!codigo.isEmpty()){
             atual = codigo.get(0);
-            codigo.remove(0);
             //redundancia proposital
             
             if((palavraAcumulada.equals(">") && atual == '=') || (palavraAcumulada.equals("<") && atual == '=')){   //maior/menor igual que
               palavraAcumulada+=atual;
               criaToken(palavraAcumulada,"Relacional");
+                          codigo.remove(0);
+
               break;
             }
             else if (palavraAcumulada.equals("<") && atual == '>'){   //diferente
                 palavraAcumulada+=atual;
                 criaToken(palavraAcumulada,"Relacional");
+                            codigo.remove(0);
+
               break;
             }
             else if(palavraAcumulada.equals("=") && (atual == '>' || atual == '<')){  //nao deve acontecer
@@ -367,6 +370,7 @@ public class Lexico {
             }
             else{           //apenas maior/menor
                 criaToken(palavraAcumulada,"Relacional");
+
                 break;
             }
         }
