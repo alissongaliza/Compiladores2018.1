@@ -1,37 +1,40 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package compiladores;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  *
- * @author rhenan
+ * @author Alisson
  */
 public class Lexico {
     
     private static final String[] PALAVRAS_CHAVES = new String[] {
-    "[Pp]rogram",
-    "[Vv]ar",
-    "[Ii]nteger",
-    "[Rr]eal",
-    "[Bb]oolean",
-    "[Pp]rocedure",
-    "[Bb]egin",
-    "[Ee]nd",
-    "[Ii]f",
-    "[Ee]lse",
-    "[Tt]hen",
-    "[Ww]hile",
-    "[Dd]o",
-    "[Nn]ot",
-    "[Oo]r",
-    "[Tr]rue",
-    "[Ff]alse"};
+    "program|PROGRAM",
+    "var|VAR",
+    "integer|INTEGER",
+    "real|REAL",
+    "boolean|BOOLEAN",
+    "procedure|PROCEDURE",
+    "begin|BEGIN",
+    "end|END",
+    "if|IF",
+    "else|ELSE",
+    "then|THEN",
+    "while|WHILE",
+    "do|DO",
+    "not|NOT",
+    "or|OR",
+    };
     
+    private static final String[] TIPOS = new String[] {
+    "boolean|BOOLEAN",
+    "char|CHAR",
+    "integer|INTEGER",
+    "real|REAL"
+    };
+    
+    private Stack<String> pilhaTipos;
     private int linhaAtual;
     private ArrayList<Token> tokens;
     private ArrayList<Character> codigo;
@@ -43,13 +46,13 @@ public class Lexico {
         linhaAtual = 1;
         this.codigo = (ArrayList) codigo;
         palavrasIgnoradas = new ArrayList();
-        
+        pilhaTipos = new Stack();
     }
     
     public char limpaCaracteres(){
         
         while(true){
-            if(Character.toString(codigo.get(0)).matches("[\t\r\f\040]"))
+            if(!codigo.isEmpty() && Character.toString(codigo.get(0)).matches("[\t\r\f\040]"))
                codigo.remove(0);
             else if(Character.toString(codigo.get(0)).matches("[\n]")){
                 linhaAtual += 1;
@@ -60,13 +63,16 @@ public class Lexico {
         }    
     }
     
-    public void percorreCodigo(){
+    public ArrayList<Token> percorreCodigo(){
         char charAtual;
+        int i = 0;
         while(!codigo.isEmpty()){
+            ++i;
+            System.out.println(i);
             charAtual = limpaCaracteres();
             
             if(Character.toString(charAtual).matches("[a-zA-Z_]"))
-                variavel();
+                identificador();
             
             else if(Character.toString(charAtual).matches("[0-9]"))
                 operando();              
@@ -95,9 +101,11 @@ public class Lexico {
         System.out.flush();
         
         printIgnoradas();
+        
+        return tokens;
     }
     
-    private void variavel(){
+    private void identificador(){
         String palavraAcumulada = "";
         palavraAcumulada += codigo.get(0);
         codigo.remove(0);
@@ -117,13 +125,16 @@ public class Lexico {
             criaToken(palavraAcumulada, "Aritmetico Aditivo");
         else if(palavraAcumulada.matches("[Aa]nd"))
             criaToken(palavraAcumulada, "Aritmetico Multiplicativo");
+        else if (palavraAcumulada.matches("true|TRUE")||palavraAcumulada.matches("false|FALSE")){
+            criaToken(palavraAcumulada, "boolean");
+        }            
         else
-            isPalavraReservada(palavraAcumulada);
+            isPalavraReservada(palavraAcumulada);    
     }
     
     private void operandoOld(){
-        String palavraAcumulada = "";
-        palavraAcumulada += codigo.get(0);
+        String token = "";
+        token += codigo.get(0);
         codigo.remove(0);
         char atual;
         boolean real = false;
@@ -133,12 +144,13 @@ public class Lexico {
             
             atual = codigo.get(0);
             if(Character.toString(atual).matches("[0-9]")){
-                palavraAcumulada += atual;
+                token += atual;
                 codigo.remove(0);
             }
             else if(Character.toString(atual).matches("[.]") && !real){
-                palavraAcumulada += atual;
-                if(palavraAcumulada.contains("x")){
+                token += atual;
+                //depois que ler um REAL verifica se o proximo é um caractere
+                if(token.contains("x")){
                     real = false;
                     tresD = true;
                 }
@@ -147,30 +159,33 @@ public class Lexico {
                     real = true;
                     
                 }
+                
                 codigo.remove(0);
             }
-            
-//            else if(Character.toString(atual).matches("[xyz]") && real){
-//                if(atual == 'x' && (!palavraAcumulada.contains("y") && !palavraAcumulada.contains("z"))){
-//                    palavraAcumulada+=atual;
-//                }
-//            }
+            //verifica se o caracter é x,y ou z, e se o numero atual é real
+            else if(Character.toString(atual).matches("[xyz]") && real){
+                //se não for y ou z ele salva
+                if(atual == 'x' && (!token.contains("y") && !token.contains("z"))){
+                    token+=atual;
+                }
+            }
+            // isso só ver se esta no formato 9.0x0.1x
             else if(Character.toString(atual).matches("[xyz]") && (real || tresD)){
                 
-                if(atual == 'x' && palavraAcumulada.matches("[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
+                if(atual == 'x' && token.matches("[0-9]+.[0-9]+")){
+                    token+=atual;
                     codigo.remove(0);
                     real = false;
                     tresD = true;
                     erro=true;
                 }
-                else if(atual == 'y' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
+                else if(atual == 'y' && token.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+")){
+                    token+=atual;
                     codigo.remove(0);
                     erro=true;
                 }
-                else if(atual == 'z' && palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+")){
-                    palavraAcumulada+=atual;
+                else if(atual == 'z' && token.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+")){
+                    token+=atual;
                     codigo.remove(0);
                     erro = false;
                     real = false;
@@ -178,7 +193,7 @@ public class Lexico {
                 }
             }
             
-            else if(Character.toString(atual).matches("[.]") && real && !palavraAcumulada.contains("x")){
+            else if(Character.toString(atual).matches("[.]") && real && !token.contains("x")){
                 //o real acabou e nao e um numero 3d
                 break;
             }
@@ -191,23 +206,20 @@ public class Lexico {
             }
         }
         if(erro){
-            while(!(palavraAcumulada.matches("[0-9]+") || palavraAcumulada.matches("[0-9]+.[0-9]+"))){
-                palavraAcumulada = palavraAcumulada.substring(0, palavraAcumulada.length() - 1);
+            while(!(token.matches("[0-9]+") || token.matches("[0-9]+.[0-9]+"))){
+                token = token.substring(0, token.length() - 1);
             }
-            if(palavraAcumulada.contains(".")){
+            if(token.contains(".")){
                 real=true;
             }
         }
             
         
         if (real){
-            criaToken(palavraAcumulada, "Numero Real");
-        }
-        else if (tresD){
-            criaToken(palavraAcumulada, "Numero 3D");
+            criaToken(token, "real");
         }
         else {
-            criaToken(palavraAcumulada, "Numero Inteiro");
+            criaToken(token, "integer");
         }
     }
     
@@ -232,6 +244,7 @@ public class Lexico {
                 if(isDecimal(palavraAcumulada)){
                     palavraAcumulada += atual;
                     inteiro = false;
+                    real = true;
                     codigo.remove(0);
                     
                 }
@@ -269,7 +282,8 @@ public class Lexico {
         if(erro){
             while(!(   palavraAcumulada.matches("[0-9]+") 
                     || palavraAcumulada.matches("[0-9]+.[0-9]+") 
-                    || palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z"))){
+                    || palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z")
+                    )){
                 palavraAcumulada = palavraAcumulada.substring(0, palavraAcumulada.length() - 1);
             }
             if(palavraAcumulada.matches("[0-9]+.[0-9]+x[0-9]+.[0-9]+y[0-9]+.[0-9]+z")){
@@ -277,7 +291,7 @@ public class Lexico {
                 real= false;
                 inteiro = false;
             }
-            else if(palavraAcumulada.matches("[0-9]+.[0-9]+")){
+            else if(palavraAcumulada.matches("[0-9]+.[0-9]+")){  //mudar para else if ao descomentar o if anterior
                 real = true;
                 tresD= false;
                 inteiro = false;
@@ -294,9 +308,9 @@ public class Lexico {
         if (real){
             criaToken(palavraAcumulada, "Numero Real");
         }
-        else if (tresD){
-            criaToken(palavraAcumulada, "Numero 3D");
-        }
+//        else if (tresD){
+//            criaToken(palavraAcumulada, "Numero 3D");
+//        }
         else if (inteiro){
             criaToken(palavraAcumulada, "Numero Inteiro");
         }
@@ -322,9 +336,9 @@ public class Lexico {
             }
         }
         if(isPR)
-            criaToken(token,"Palavra Reservada");
+            criaToken(token,"Palavra Reservada"); 
         else
-            criaToken(token, "Identificador");
+            criaToken(token, "Identificador");     
     }
     
     private void relacional(){
@@ -334,17 +348,20 @@ public class Lexico {
         char atual;
         while(!codigo.isEmpty()){
             atual = codigo.get(0);
-            codigo.remove(0);
             //redundancia proposital
             
             if((palavraAcumulada.equals(">") && atual == '=') || (palavraAcumulada.equals("<") && atual == '=')){   //maior/menor igual que
               palavraAcumulada+=atual;
               criaToken(palavraAcumulada,"Relacional");
+                          codigo.remove(0);
+
               break;
             }
             else if (palavraAcumulada.equals("<") && atual == '>'){   //diferente
                 palavraAcumulada+=atual;
                 criaToken(palavraAcumulada,"Relacional");
+                            codigo.remove(0);
+
               break;
             }
             else if(palavraAcumulada.equals("=") && (atual == '>' || atual == '<')){  //nao deve acontecer
@@ -353,45 +370,48 @@ public class Lexico {
             }
             else{           //apenas maior/menor
                 criaToken(palavraAcumulada,"Relacional");
+
                 break;
             }
         }
     }
     
     private void aritmetico(){
-        String palavraAcumulada = "";
-        palavraAcumulada += codigo.get(0);
-        switch(palavraAcumulada){
+        String token = "";
+        token += codigo.get(0);
+        switch(token){
             case "+":
-                criaToken(palavraAcumulada,"Operador Aditivo");
+                criaToken(token,"Operador Aditivo");
                 codigo.remove(0);
                 break;
             case "-":
-                criaToken(palavraAcumulada,"Operador Aditivo");
+                criaToken(token,"Operador Aditivo");
                 codigo.remove(0);
                 break;
             case "*":
-                criaToken(palavraAcumulada,"Operador Multiplicativo");
+                criaToken(token,"Operador Multiplicativo");
                 codigo.remove(0);
                 break;
             case "/":
                 codigo.remove(0);
                 char atual = codigo.get(0);
                 if(atual == '/'){
-                    palavraAcumulada += atual;
+                    token += atual;
                     codigo.remove(0);
-                    atual = codigo.get(0);
+                    //atual = codigo.get(0);
                     while(atual != '\n' && !codigo.isEmpty()){
-                        
-                        palavraAcumulada += atual;
                         codigo.remove(0);
-                        if(!codigo.isEmpty())
-                            atual = codigo.get(0);
+                        atual = codigo.get(0);
+                        
+                        //token += atual;
+                        //codigo.remove(0);
+                        //if(!codigo.isEmpty())
+                            //atual = codigo.get(0);
                     }
-                    criaPalavrasIgnoradas(palavraAcumulada, "Comentário na linha " + linhaAtual);
+                    criaToken(token, "Comentário de linha " );
                 }
                 else{
-                    criaToken(palavraAcumulada,"Operador Multiplicativo");
+                    criaToken(token,"Operador Multiplicativo");
                 }
                 
                 break;
@@ -445,6 +465,7 @@ public class Lexico {
                     contador--;
                     if(contador == 0){
                         criaPalavrasIgnoradas(palavraAcumulada, "Comentário da linha " + linhaFechamento + " ate linha " + linhaAtual);
+                        //criaToken(palavraAcumulada)
                         codigo.remove(0);
                         return;
                     }
@@ -508,8 +529,8 @@ public class Lexico {
     
     private void printIgnoradas(){
         
-        System.out.println("\n---------------------------------------------------------------------------------------------------");
-        System.out.println("\n\nPalavras ignoradas: \n");
+        //System.out.println("\n---------------------------------------------------------------------------------------------------");
+        //System.out.println("\n\nPalavras ignoradas: \n");
         
         int i = 1;
         for (PalavraIgnorada palavraIgnorada : palavrasIgnoradas) {

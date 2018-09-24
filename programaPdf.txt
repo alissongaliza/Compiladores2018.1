@@ -1,5 +1,16 @@
-12.34.56
-//if
-30.4x5.3y3.12z
-program blablabla
+program Test3;
+var 
+   NUMERO, n2  : integer; 
+   final   : integer; 
+begin  {tente gerar um erro usando um caracter nao permitido.. tipo &} 
+   NUMERO := 3 / 5 + 7 - 9; 
+   if (NUMERO >= 20) or (NUMERO <= 90) then 
+   begin 
+      NUMERO := -10 / (-3); 
+      do 
+        NUMERO := -10 / (-3) 
+      while(numero > 20) 
+ 
+    end; 
+   final := NUMERO + 1 
 end.

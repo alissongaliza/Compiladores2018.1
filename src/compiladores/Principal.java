@@ -1,6 +1,8 @@
 package compiladores; 
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,14 +10,34 @@ import java.util.Scanner;
 public class Principal {
    
    
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         try {
             
-            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Desktop\\Compiladores2018.1\\programaPdf.txt")); 
-            String linha;
-            String linha2 = ""; 
+            ArrayList<Character> caracteres = leArquivo();
             
+            Lexico lexico = new Lexico((ArrayList)caracteres.clone()); 
+            
+            ArrayList<Token> tokens = lexico.percorreCodigo();
+            
+            Sintatico sintatico = new Sintatico ((ArrayList<Token>)tokens.clone());
+            sintatico.program();
+              
+        } catch (FileNotFoundException e) {
+            System.err.println(e);
+        }
+
+        
+    }
+    
+    private static ArrayList<Character> leArquivo() throws FileNotFoundException, IOException{
+        
+//            Scanner s = new Scanner(new File ("/home/jonathan/Documentos/Compiladores2018.1/programaSlide.txt"));
+            Scanner s = new Scanner(new File("C:\\Users\\Eugenio\\Documents\\Compiladores2018.1\\programaSlide.txt"));
+//            Scanner s1 = new Scanner(new File("C:\\Users\\Alisson\\Google Drive\\UF\\Compiladores\\Compiladores2018.1\\programaSlide.txt"));
+//            Scanner s = new Scanner(new File("/home/alisson/Documents/Compiladores2018.1/programaSlide.txt"));
+            String linha;
+            String linha2 = "";
             while (s.hasNextLine()) {
                 
                 linha = s.nextLine();
@@ -36,14 +58,7 @@ public class Principal {
             
             System.out.flush();
             
-            Lexico lexico = new Lexico((ArrayList)caracteres.clone()); 
-            lexico.percorreCodigo();
-              
-        } catch (FileNotFoundException e) {
-            System.err.println(e);
-        }
-
-        
+            return caracteres;
     }
 
 }

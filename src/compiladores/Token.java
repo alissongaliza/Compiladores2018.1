@@ -10,7 +10,7 @@ package compiladores;
  * @author Lumo
  */
 public class Token {
-    private final int numeroLinha;
+    private int numeroLinha;
     private final String tipo;
     private final String nome;
     
@@ -20,6 +20,12 @@ public class Token {
         this.tipo = tipo;
         numeroLinha = numero;
         
+        
+    }
+    
+    public Token(String nome, String tipo){
+        this.nome = nome;
+        this.tipo = tipo;
         
     }
 	
